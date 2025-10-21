@@ -2,8 +2,7 @@
 
 Official implementation of the paper  
 > **"MEOCI: Model Partitioning and Early-Exit Point Selection Joint Optimization for Collaborative Inference in Vehicular Edge Computing"**  
-> *Chunlin Li, Jiaqi Wang, Kun Jiang, Cheng Xiong, Shaohua Wan (Senior Member, IEEE)*  
-> *Accepted by IEEE Transactions on Intelligent Transportation Systems, 2025.*
+
 
 This repository provides the **complete implementation and experimental framework** of the MEOCI algorithm — a **model partitioning and early-exit joint optimization mechanism** for **edge–vehicle collaborative inference acceleration** using the **Adaptive Dual-Pool Dueling Double DQN (ADP-D3QN)** algorithm.
 
@@ -282,6 +281,9 @@ python visualization/plot_convergence.py --input results/reward_log.csv
 
 **Output:** Reward vs Episode plot comparing `D3QN`, `A-D3QN`, `DP-D3QN`, and `ADP-D3QN`.
 
+📊 Visualization Result:
+
+![Convergence Curve (Fig. 7)](https://meoci.oss-cn-beijing.aliyuncs.com/Figure/P1.png?Expires=1761023661&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=OY0UEPxCT3hRAL3PfL99Vn4CP%2Bk%3D)
 ```python
 # visualization/plot_convergence.py
 import pandas as pd, matplotlib.pyplot as plt
@@ -299,6 +301,20 @@ plt.legend(); plt.grid(True); plt.tight_layout(); plt.show()
 python visualization/plot_exit_distribution.py --model vgg16
 ```
 
+**Output:** Reward vs Episode plot comparing `D3QN`, `A-D3QN`, `DP-D3QN`, and `ADP-D3QN`.
+
+📊 Visualization Result:
+
+<p align="center">
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alexprobability.png?Expires=1761024055&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=pDIeGEeqjOdB7NJT0%2BkJXahRqKY%3D" alt="Fig8(a)" width="30%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vggprobability.png?Expires=1761024106&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=kpQpThUaq97ige9BEIPPz1A36ZM%3D" alt="Fig8(b)" width="30%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/output.png?Expires=1761024143&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=OXsqTpgpxyxW9ZlfQPXJI23fK4U%3D" alt="Fig8(c)" width="30%"/>
+</p>
+
+<p align="center">
+  <b>Fig. 8.</b>  The accuracy and probability of early exit of multi-exit DNN models.
+</p>
+
 Generates a dual-axis bar + line plot showing **exit probabilities (%)** and **corresponding accuracies (%)** for each exit branch.
 
 ```python
@@ -315,11 +331,23 @@ plt.title("Early-Exit Probability and Accuracy (VGG16)")
 fig.legend(loc="upper right"); plt.tight_layout(); plt.show()
 ```
 
-### 🧩 Example 3: Latency vs Number of Vehicles (Fig. 10)
+### 🧩 Example 3: Latency vs Number of Vehicles (Fig. 9)
 
 ```bash
 python visualization/plot_vehicle_latency.py --data results/latency_vs_vehicle.csv
 ```
+📊 Visualization Result:
+
+<p align="center">
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alexnetdevice.png?Expires=1761024646&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=ljnhmN4pyAReS8%2FcFB6NLokHcHg%3D" alt="Fig9a" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg16device.png?Expires=1761024678&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=zgST9scV7FtDgOUpuy7NnpbAazk%3D" alt="Fig9b" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/resnet50Device.png?Expires=1761024729&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=HTgFbJMMwTNJk3qVFzeEXA7F4NI%3D" alt="Fig9c" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/yolov10device.png?Expires=1761024769&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=dCEtsm8huLSUfTda14qt%2BEwal%2F0%3D" alt="Fig9d" width="23%"/>
+</p>
+
+<p align="center">
+  <b>Fig. 9.</b> Performance of heterogeneous vehicles in multi-exit DNN models.
+</p>
 
 Displays the trend of **average inference latency** and **task completion rate** under different vehicle loads.
 
@@ -334,11 +362,24 @@ plt.xlabel("Number of Vehicles"); plt.ylabel("Average Inference Latency (ms)")
 plt.title("Latency vs Vehicle Count (VGG16)"); plt.legend(); plt.grid(True); plt.tight_layout(); plt.show()
 ```
 
-### 🧩 Example 4: Heterogeneous Device Performance (Fig. 9)
+### 🧩 Example 4: Heterogeneous Device Performance (Fig. 10)
 
 ```bash
 python visualization/plot_completion_rate.py --data results/device_comparison.csv
 ```
+
+📊 Visualization Result:
+
+<p align="center">
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-vehicle-delay-3.png?Expires=1761025033&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=Siee85cVC9w2q4ncGCZtHXbNrS8%3D" alt="Fig10a" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg-numberVehicle-delay.png?Expires=1761025108&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=%2FC%2F2xAUaLSbZI28auJ3DIE7pAjs%3D" alt="Fig10b" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-numberVehicle-taskCompletion.png?Expires=1761025151&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=C3d3a%2B9q70f4zCTxRBy7FwGLLZU%3D" alt="Fig10c" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg-numberVehilce-taskCompletion.png?Expires=1761025185&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=4bxHIn%2BJK94MYEEHYUMdK618VwQ%3D" alt="Fig10d" width="23%"/>
+</p>
+
+<p align="center">
+  <b>Fig. 10.</b> Effect  of number of vehicles.
+</p>
 
 Compares latency between **Jetson Nano** and **Raspberry Pi 4B**.
 
