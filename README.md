@@ -283,7 +283,7 @@ python visualization/plot_convergence.py --input results/reward_log.csv
 
 📊 Visualization Result:
 
-![Convergence Curve (Fig. 7)](https://meoci.oss-cn-beijing.aliyuncs.com/Figure/P1.png?Expires=1761023661&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=OY0UEPxCT3hRAL3PfL99Vn4CP%2Bk%3D)
+![Convergence Curve (Fig. 7)](https://meoci.oss-cn-beijing.aliyuncs.com/Figure/P1.png)
 ```python
 # visualization/plot_convergence.py
 import pandas as pd, matplotlib.pyplot as plt
@@ -306,9 +306,9 @@ python visualization/plot_exit_distribution.py --model vgg16
 📊 Visualization Result:
 
 <p align="center">
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alexprobability.png?Expires=1761024055&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=pDIeGEeqjOdB7NJT0%2BkJXahRqKY%3D" alt="Fig8(a)" width="30%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vggprobability.png?Expires=1761024106&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=kpQpThUaq97ige9BEIPPz1A36ZM%3D" alt="Fig8(b)" width="30%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/output.png?Expires=1761024143&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=OXsqTpgpxyxW9ZlfQPXJI23fK4U%3D" alt="Fig8(c)" width="30%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alexprobability.png" alt="Fig8(a)" width="30%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vggprobability.png" alt="Fig8(b)" width="30%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/output.png" alt="Fig8(c)" width="30%"/>
 </p>
 
 <p align="center">
@@ -339,10 +339,10 @@ python visualization/plot_vehicle_latency.py --data results/latency_vs_vehicle.c
 📊 Visualization Result:
 
 <p align="center">
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alexnetdevice.png?Expires=1761024646&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=ljnhmN4pyAReS8%2FcFB6NLokHcHg%3D" alt="Fig9a" width="23%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg16device.png?Expires=1761024678&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=zgST9scV7FtDgOUpuy7NnpbAazk%3D" alt="Fig9b" width="23%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/resnet50Device.png?Expires=1761024729&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=HTgFbJMMwTNJk3qVFzeEXA7F4NI%3D" alt="Fig9c" width="23%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/yolov10device.png?Expires=1761024769&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=dCEtsm8huLSUfTda14qt%2BEwal%2F0%3D" alt="Fig9d" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alexnetdevice.png" alt="Fig9a" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg16device.png" alt="Fig9b" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/resnet50Device.png" alt="Fig9c" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/yolov10device.png" alt="Fig9d" width="23%"/>
 </p>
 
 <p align="center">
@@ -371,10 +371,10 @@ python visualization/plot_completion_rate.py --data results/device_comparison.cs
 📊 Visualization Result:
 
 <p align="center">
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-vehicle-delay-3.png?Expires=1761025033&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=Siee85cVC9w2q4ncGCZtHXbNrS8%3D" alt="Fig10a" width="23%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg-numberVehicle-delay.png?Expires=1761025108&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=%2FC%2F2xAUaLSbZI28auJ3DIE7pAjs%3D" alt="Fig10b" width="23%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-numberVehicle-taskCompletion.png?Expires=1761025151&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=C3d3a%2B9q70f4zCTxRBy7FwGLLZU%3D" alt="Fig10c" width="23%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg-numberVehilce-taskCompletion.png?Expires=1761025185&OSSAccessKeyId=TMP.3KnCMgw6pd8FosVvQG4p2tP22kZkDFVZMpWtCVPsG8UWaLQS1ynA8WE4oq3Qkq2TvtQNTp7zjMzis5ZY6QWcnnP1hfLiNC&Signature=4bxHIn%2BJK94MYEEHYUMdK618VwQ%3D" alt="Fig10d" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-vehicle-delay-3.png" alt="Fig10a" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg-numberVehicle-delay.png" alt="Fig10b" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-numberVehicle-taskCompletion.png" alt="Fig10c" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg-numberVehilce-taskCompletion.png" alt="Fig10d" width="23%"/>
 </p>
 
 <p align="center">
