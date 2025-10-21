@@ -411,6 +411,25 @@ python visualization/plot_completion_rate.py --data results/device_comparison.cs
   <b>Fig. 11.</b> Effect of transmission rate.
 </p>
 
+### 🧩 Example 6: Effect of delay constraints (Fig. 12)
+
+```bash
+python visualization/plot_completion_rate.py --data results/device_comparison.csv
+```
+
+📊 Visualization Result:
+
+<p align="center">
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex_delay_accu2.png" alt="Fig11b" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex_delay_completion.png" alt="Fig11b" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg_delay_accu2.png" alt="Fig11c" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg_delay_completion.png" alt="Fig11d" width="23%"/>
+</p>
+
+<p align="center">
+  <b>Fig. 12.</b> Effect of delay constraints.
+</p>
+
 ### 🧠 Notes
 
 * All data CSV files (`reward_log.csv`, `latency_vs_vehicle.csv`, etc.) are produced automatically during training/evaluation.
