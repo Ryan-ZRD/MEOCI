@@ -362,7 +362,7 @@ plt.xlabel("Number of Vehicles"); plt.ylabel("Average Inference Latency (ms)")
 plt.title("Latency vs Vehicle Count (VGG16)"); plt.legend(); plt.grid(True); plt.tight_layout(); plt.show()
 ```
 
-### 🧩 Example 4: Heterogeneous Device Performance (Fig. 10)
+### 🧩 Example 4: Effect  of number of vehicles (Fig. 10)
 
 ```bash
 python visualization/plot_completion_rate.py --data results/device_comparison.csv
@@ -391,6 +391,25 @@ plt.bar(df["Device"],df["Latency"],color=["#4c72b0","#55a868"])
 plt.ylabel("Average Latency (ms)"); plt.title("Heterogeneous Device Performance")
 plt.show()
 ```
+
+### 🧩 Example 5:Effect of transmission rate (Fig. 11)
+
+```bash
+python visualization/plot_completion_rate.py --data results/device_comparison.csv
+```
+
+📊 Visualization Result:
+
+<p align="center">
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-mbps-delay.png" alt="Fig11b" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg-mbps-delay.png" alt="Fig11b" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-mbps-taskCompletion.png" alt="Fig11c" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg-mbps-taskCompletion.png" alt="Fig11d" width="23%"/>
+</p>
+
+<p align="center">
+  <b>Fig. 11.</b> Effect of transmission rate.
+</p>
 
 ### 🧠 Notes
 
