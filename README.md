@@ -308,7 +308,6 @@ python visualization/plot_exit_distribution.py --model vgg16
 <p align="center">
   <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alexprobability.png" alt="Fig8(a)" width="30%"/>
   <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vggprobability.png" alt="Fig8(b)" width="30%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/output.png" alt="Fig8(c)" width="30%"/>
 </p>
 
 <p align="center">
@@ -339,10 +338,8 @@ python visualization/plot_vehicle_latency.py --data results/latency_vs_vehicle.c
 📊 Visualization Result:
 
 <p align="center">
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alexnetdevice.png" alt="Fig9a" width="23%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg16device.png" alt="Fig9b" width="23%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/resnet50Device.png" alt="Fig9c" width="23%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/yolov10device.png" alt="Fig9d" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alexnetdevice.png" alt="Fig9a" width="30%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg16device.png" alt="Fig9b" width="30%"/>
 </p>
 
 <p align="center">
@@ -371,10 +368,8 @@ python visualization/plot_completion_rate.py --data results/device_comparison.cs
 📊 Visualization Result:
 
 <p align="center">
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-vehicle-delay-3.png" alt="Fig10a" width="23%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg-numberVehicle-delay.png" alt="Fig10b" width="23%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-numberVehicle-taskCompletion.png" alt="Fig10c" width="23%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg-numberVehilce-taskCompletion.png" alt="Fig10d" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-vehicle-delay-3.png" alt="Fig10a" width="30%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg-numberVehicle-delay.png" alt="Fig10b" width="30%"/>
 </p>
 
 <p align="center">
@@ -401,10 +396,8 @@ python visualization/plot_completion_rate.py --data results/device_comparison.cs
 📊 Visualization Result:
 
 <p align="center">
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-mbps-delay.png" alt="Fig11b" width="23%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg-mbps-delay.png" alt="Fig11b" width="23%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-mbps-taskCompletion.png" alt="Fig11c" width="23%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg-mbps-taskCompletion.png" alt="Fig11d" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-mbps-delay.png" alt="Fig11b" width="30%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg-mbps-delay.png" alt="Fig11b" width="30%"/>
 </p>
 
 <p align="center">
@@ -420,14 +413,29 @@ python visualization/plot_completion_rate.py --data results/device_comparison.cs
 📊 Visualization Result:
 
 <p align="center">
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex_delay_accu2.png" alt="Fig11b" width="23%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex_delay_completion.png" alt="Fig11b" width="23%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg_delay_accu2.png" alt="Fig11c" width="23%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg_delay_completion.png" alt="Fig11d" width="23%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex_delay_accu2.png" alt="Fig11b" width="30%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex_delay_completion.png" alt="Fig11b" width="30%"/>
 </p>
 
 <p align="center">
   <b>Fig. 12.</b> Effect of delay constraints.
+</p>
+
+### 🧩 Example 7:  Effect of energy consumption constraints (Fig. 13)
+
+```bash
+python visualization/plot_completion_rate.py --data results/device_comparison.csv
+```
+
+📊 Visualization Result:
+
+<p align="center">
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/resnet50_energy.png" alt="Fig13a" width="30%"/>
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/yolov10_energy.png" alt="Fig11b" width="30%"/>
+</p>
+
+<p align="center">
+  <b>Fig. 13.</b> Effect of energy consumption constraints.
 </p>
 
 ### 🧠 Notes
