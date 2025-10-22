@@ -274,169 +274,417 @@ visualization/
 
 ````
 
-### 🧩 Example 1: Convergence Curve (Fig. 7)
+### 🧩 Convergence Analysis (Fig. 7)
+
 ```bash
 python visualization/plot_convergence.py --input results/reward_log.csv
-````
-
-**Output:** Reward vs Episode plot comparing `D3QN`, `A-D3QN`, `DP-D3QN`, and `ADP-D3QN`.
+```
 
 📊 Visualization Result:
 
-![Convergence Curve (Fig. 7)](https://meoci.oss-cn-beijing.aliyuncs.com/Figure/P1.png)
+<p align="center">
+  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/P1.png" alt="Fig7" width="45%"/>
+</p>
+
+<p align="center">
+  <b>Fig. 7.</b> Comparison of convergence between different algorithmic and environmental settings.
+</p>
+
+Description:
+
+Fig. 7 illustrates the convergence comparison among different reinforcement learning algorithms under identical vehicular edge computing environments.
+The proposed ADP-D3QN (Adaptive Dual-Pool Dueling Double Deep Q-Network) achieves the highest reward level and fastest convergence speed, indicating stronger learning stability and policy optimization capability.
+Compared to D3QN, A-D3QN, and DP-D3QN, the proposed approach exhibits smoother learning trajectories, reduced reward oscillations after approximately 400 episodes, and stable convergence after 600 episodes.
+These results verify that the adaptive dual-pool exploration mechanism in ADP-D3QN effectively balances exploration and exploitation, accelerates convergence, and mitigates instability caused by dynamic vehicular network conditions.
+
 ```python
 # visualization/plot_convergence.py
 import pandas as pd, matplotlib.pyplot as plt
 df = pd.read_csv("results/reward_log.csv")
+
 plt.figure(figsize=(6,4))
 for col in df.columns[1:]:
     plt.plot(df["Episode"], df[col], label=col, linewidth=1.8)
-plt.xlabel("Episode"); plt.ylabel("Reward"); plt.title("Convergence of Different Algorithms")
-plt.legend(); plt.grid(True); plt.tight_layout(); plt.show()
+plt.xlabel("Episode")
+plt.ylabel("Reward")
+plt.title("Convergence of Different Algorithms")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.savefig("results/fig7_convergence.png", dpi=300)
+plt.show()
 ```
 
-### 🧩 Example 2: Early-Exit Probability and Accuracy (Fig. 8)
+### 🧩 Early-Exit Probability and Accuracy Analysis (Fig. 8)
 
 ```bash
+python visualization/plot_exit_distribution.py --model alexnet
 python visualization/plot_exit_distribution.py --model vgg16
-```
 
-**Output:** Reward vs Episode plot comparing `D3QN`, `A-D3QN`, `DP-D3QN`, and `ADP-D3QN`.
+```
 
 📊 Visualization Result:
 
-<p align="center">
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alexprobability.png" alt="Fig8(a)" width="30%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vggprobability.png" alt="Fig8(b)" width="30%"/>
-</p>
+<table align="center">
+  <tr>
+    <td align="center" width="50%">
+      <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alexprobability.png" alt="(a) AlexNet" width="95%"/><br>
+      <b>(a) AlexNet</b>
+    </td>
+    <td align="center" width="50%">
+      <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vggprobability.png" alt="(b) VGG16" width="95%"/><br>
+      <b>(b) VGG16</b>
+    </td>
+  </tr>
+</table>
 
 <p align="center">
-  <b>Fig. 8.</b>  The accuracy and probability of early exit of multi-exit DNN models.
+  <b>Fig. 8.</b> The accuracy and probability of early exit of multi-exit DNN models.
 </p>
 
-Generates a dual-axis bar + line plot showing **exit probabilities (%)** and **corresponding accuracies (%)** for each exit branch.
+
+Description:
+
+Fig. 8 illustrates the relationship between early-exit probability and classification accuracy across multiple exit branches in the multi-exit DNNs (AlexNet and VGG16).
+Each exit corresponds to a potential early-termination point for inference.
+As the exit depth increases (from exit 1 to exit 4/5), both exit accuracy and exit activation probability increase.
+This indicates that deeper exits capture richer semantic features, allowing higher prediction confidence.
+For AlexNet, over 75 % of tasks exit before the final layer, while VGG16 exhibits a more balanced distribution, with exit 5 achieving ≈ 87 % accuracy.
+These results verify that the multi-exit structure effectively balances latency and accuracy, enabling adaptive early inference under real-time constraints.
 
 ```python
 # visualization/plot_exit_distribution.py
-import matplotlib.pyplot as plt, numpy as np
-exits = ["Exit1","Exit2","Exit3","Exit4","Exit5"]
-prob = [32.4,28.6,19.7,14.3,5.0]        # Example probabilities for VGG16
-acc  = [81.5,84.2,88.7,91.6,92.8]       # Example accuracies
-fig,ax1=plt.subplots()
-ax1.bar(exits,prob,color="lightblue",label="Exit Probability (%)")
-ax2=ax1.twinx(); ax2.plot(exits,acc,"r-o",label="Accuracy (%)")
-ax1.set_ylabel("Exit Probability (%)"); ax2.set_ylabel("Accuracy (%)")
-plt.title("Early-Exit Probability and Accuracy (VGG16)")
-fig.legend(loc="upper right"); plt.tight_layout(); plt.show()
+import matplotlib.pyplot as plt
+import numpy as np
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--model", type=str, required=True, help="alexnet or vgg16")
+args = parser.parse_args()
+
+if args.model.lower() == "alexnet":
+    exits = ["exit1","exit2","exit3","exit4"]
+    prob = [68.3, 72.4, 76.8, 83.5]
+    acc  = [65.1, 70.3, 73.5, 78.8]
+    title = "Early-Exit Probability and Accuracy (AlexNet)"
+    save_path = "results/fig8a_exit_alexnet.png"
+
+elif args.model.lower() == "vgg16":
+    exits = ["exit1","exit2","exit3","exit4","exit5"]
+    prob = [70.5, 74.8, 78.2, 84.1, 89.0]
+    acc  = [67.2, 72.9, 75.6, 80.4, 86.9]
+    title = "Early-Exit Probability and Accuracy (VGG16)"
+    save_path = "results/fig8b_exit_vgg16.png"
+
+else:
+    raise ValueError("Unsupported model type.")
+
+fig, ax1 = plt.subplots(figsize=(6,4))
+ax1.bar(exits, prob, color="royalblue", label="Exit Probability (%)")
+ax2 = ax1.twinx()
+ax2.plot(exits, acc, "orange", marker="o", linewidth=2, label="Accuracy (%)")
+
+ax1.set_xlabel("Exit Point")
+ax1.set_ylabel("Exit Probability (%)")
+ax2.set_ylabel("Accuracy (%)")
+plt.title(title)
+fig.legend(loc="upper left", bbox_to_anchor=(0.1,0.9))
+plt.tight_layout()
+plt.savefig(save_path, dpi=300)
+plt.show()
 ```
 
-### 🧩 Example 3: Latency vs Number of Vehicles (Fig. 9)
+### 🧩 Performance of Heterogeneous Vehicles (Fig. 9)
 
 ```bash
-python visualization/plot_vehicle_latency.py --data results/latency_vs_vehicle.csv
+python visualization/plot_heterogeneous_performance.py --model alexnet --data results/device_latency_alexnet.csv
+python visualization/plot_heterogeneous_performance.py --model vgg16 --data results/device_latency_vgg16.csv
 ```
 📊 Visualization Result:
 
-<p align="center">
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alexnetdevice.png" alt="Fig9a" width="30%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg16device.png" alt="Fig9b" width="30%"/>
-</p>
+<table align="center">
+  <tr>
+    <td align="center" width="50%">
+      <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alexnetdevice.png" alt="(a) AlexNet" width="95%"/><br>
+      <b>(a) AlexNet</b>
+    </td>
+    <td align="center" width="50%">
+      <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg16device.png" alt="(b) VGG16" width="95%"/><br>
+      <b>(b) VGG16</b>
+    </td>
+  </tr>
+</table>
 
 <p align="center">
   <b>Fig. 9.</b> Performance of heterogeneous vehicles in multi-exit DNN models.
 </p>
 
-Displays the trend of **average inference latency** and **task completion rate** under different vehicle loads.
+Description:
+
+Fig. 9 compares the inference latency of heterogeneous devices (Jetson Nano and Raspberry Pi 4B) executing multi-exit DNN models (AlexNet and VGG16) under different collaborative inference strategies.
+The proposed ADP-D3QN consistently achieves the lowest inference latency across both devices, outperforming baselines such as Vehicle-Only, Edge-Only, Neur, Edgent, FedAdapt, and DINA (Fog-Based).
+On the Raspberry Pi 4B, MEOCI reduces latency by 25 % – 35 % compared with FedAdapt and DINA, while maintaining accuracy comparable to larger models.
+These findings confirm that MEOCI effectively.
 
 ```python
-# visualization/plot_vehicle_latency.py
-import pandas as pd, matplotlib.pyplot as plt
-df = pd.read_csv("results/latency_vs_vehicle.csv")
-plt.figure(figsize=(6,4))
-plt.errorbar(df["Vehicles"],df["ADP-D3QN"],yerr=df["Std_ADP"],fmt="-o",label="ADP-D3QN")
-plt.errorbar(df["Vehicles"],df["Edgent"],yerr=df["Std_Edg"],fmt="-s",label="Edgent")
-plt.xlabel("Number of Vehicles"); plt.ylabel("Average Inference Latency (ms)")
-plt.title("Latency vs Vehicle Count (VGG16)"); plt.legend(); plt.grid(True); plt.tight_layout(); plt.show()
-```
+# visualization/plot_heterogeneous_performance.py
+import pandas as pd
+import matplotlib.pyplot as plt
+import argparse
 
-### 🧩 Example 4: Effect  of number of vehicles (Fig. 10)
+parser = argparse.ArgumentParser()
+parser.add_argument("--model", type=str, required=True, help="alexnet or vgg16")
+parser.add_argument("--data", type=str, required=True, help="path to csv file")
+args = parser.parse_args()
 
-```bash
-python visualization/plot_completion_rate.py --data results/device_comparison.csv
-```
+df = pd.read_csv(args.data)
+models = ["Vehicle-Only","Edge-Only","Neur","Edgent","DINA(Fog-Based)","FedAdapt","LBO","ADP-D3QN"]
 
-📊 Visualization Result:
+nano = df.loc[df["Device"]=="Nano", models].values.flatten()
+pi4b = df.loc[df["Device"]=="Pi4B", models].values.flatten()
 
-<p align="center">
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-vehicle-delay-3.png" alt="Fig10a" width="30%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg-numberVehicle-delay.png" alt="Fig10b" width="30%"/>
-</p>
+x = range(len(models))
+bar_width = 0.35
+plt.figure(figsize=(8,5))
+plt.bar(x, nano, bar_width, label="Nano")
+plt.bar([i + bar_width for i in x], pi4b, bar_width, label="Pi 4B")
+plt.xticks([i + bar_width / 2 for i in x], models, rotation=30)
+plt.ylabel("Inference Latency (ms)")
+plt.legend()
+plt.grid(axis="y", linestyle="--", alpha=0.6)
 
-<p align="center">
-  <b>Fig. 10.</b> Effect  of number of vehicles.
-</p>
+if args.model.lower() == "alexnet":
+    plt.title("Heterogeneous Device Performance (AlexNet)")
+    plt.savefig("results/fig9a_heter_alexnet.png", dpi=300)
+elif args.model.lower() == "vgg16":
+    plt.title("Heterogeneous Device Performance (VGG16)")
+    plt.savefig("results/fig9b_heter_vgg16.png", dpi=300)
+else:
+    raise ValueError("Unsupported model type. Choose alexnet or vgg16.")
 
-Compares latency between **Jetson Nano** and **Raspberry Pi 4B**.
-
-```python
-# visualization/plot_completion_rate.py
-import pandas as pd, matplotlib.pyplot as plt
-df=pd.read_csv("results/device_comparison.csv")
-plt.bar(df["Device"],df["Latency"],color=["#4c72b0","#55a868"])
-plt.ylabel("Average Latency (ms)"); plt.title("Heterogeneous Device Performance")
+plt.tight_layout()
 plt.show()
 ```
 
-### 🧩 Example 5:Effect of transmission rate (Fig. 11)
+### 🧩 Effect of Number of Vehicles (Fig. 10)
 
 ```bash
-python visualization/plot_completion_rate.py --data results/device_comparison.csv
+python visualization/plot_vehicle_effect.py --metric latency --data results/latency_vs_vehicle_alexnet.csv
+python visualization/plot_vehicle_effect.py --metric completion --data results/completion_vs_vehicle_alexnet.csv
 ```
 
 📊 Visualization Result:
 
-<p align="center">
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-mbps-delay.png" alt="Fig11b" width="30%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/vgg-mbps-delay.png" alt="Fig11b" width="30%"/>
-</p>
+<table align="center"> <tr> <td align="center" width="50%"> <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-vehicle-delay-3.png" alt="(a) Inference latency in AlexNet" width="95%"/><br> <b>(a) Inference latency in AlexNet</b> </td> <td align="center" width="50%"> <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-numberVehicle-taskCompletion.png" alt="(b) Completion rate in AlexNet" width="95%"/><br> <b>(b) Completion rate in AlexNet</b> </td> </tr> </table> <p align="center"> <b>Fig. 10.</b> Effect of number of vehicles on inference latency and task completion rate. </p>
 
-<p align="center">
-  <b>Fig. 11.</b> Effect of transmission rate.
-</p>
+Description:
 
-### 🧩 Example 6: Effect of delay constraints (Fig. 12)
+Fig. 10 demonstrates the impact of increasing vehicle density on system inference latency and task completion rate under different collaborative inference strategies.
+As the number of vehicles increases, both computation congestion and communication delay rise, causing a steady increase in inference latency across all methods.
+However, the proposed ADP-D3QN (MEOCI) exhibits the lowest latency growth and maintains the highest completion rate, outperforming conventional schemes such as Vehicle-Only, Edge-Only, and Edgent.
+This improvement stems from MEOCI’s ability to dynamically allocate computing resources and select optimal model partition points based on current vehicular load.
+In scenarios with 25–30 vehicles, MEOCI achieves over 20 % latency reduction and 10 % higher completion rate compared with baseline algorithms, validating its scalability and robustness in dense traffic conditions.
+
+```python
+# visualization/plot_vehicle_effect.py
+import pandas as pd, matplotlib.pyplot as plt, argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--metric", type=str, required=True, help="latency or completion")
+parser.add_argument("--data", type=str, required=True, help="path to csv file")
+args = parser.parse_args()
+
+df = pd.read_csv(args.data)
+vehicles = df["Vehicles"]
+methods = [c for c in df.columns if c != "Vehicles"]
+
+plt.figure(figsize=(7,5))
+for method in methods:
+    plt.errorbar(vehicles, df[method], yerr=df.get("Std_"+method, None), label=method, linewidth=1.8)
+plt.xlabel("Number of Vehicles")
+plt.grid(True, linestyle="--", alpha=0.6)
+
+if args.metric.lower() == "latency":
+    plt.ylabel("Average Inference Latency (ms)")
+    plt.title("Effect of Number of Vehicles on Latency (AlexNet)")
+    plt.legend(fontsize=8)
+    plt.tight_layout()
+    plt.savefig("results/fig10a_vehicle_latency_alexnet.png", dpi=300)
+
+elif args.metric.lower() == "completion":
+    plt.ylabel("Task Completion Rate (%)")
+    plt.title("Effect of Number of Vehicles on Completion Rate (AlexNet)")
+    plt.legend(fontsize=8)
+    plt.tight_layout()
+    plt.savefig("results/fig10b_vehicle_completion_alexnet.png", dpi=300)
+
+plt.show()
+```
+
+### 🧩 Effect of Transmission Rate (Fig. 11)
 
 ```bash
-python visualization/plot_completion_rate.py --data results/device_comparison.csv
+python visualization/plot_transmission_effect.py --metric latency --data results/latency_vs_mbps_alexnet.csv
+python visualization/plot_transmission_effect.py --metric completion --data results/completion_vs_mbps_alexnet.csv
 ```
 
 📊 Visualization Result:
 
-<p align="center">
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex_delay_accu2.png" alt="Fig11b" width="30%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex_delay_completion.png" alt="Fig11b" width="30%"/>
-</p>
+<table align="center"> <tr> <td align="center" width="50%"> <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-mbps-delay.png" alt="(a) Inference latency in AlexNet" width="95%"/><br> <b>(a) Inference latency in AlexNet</b> </td> <td align="center" width="50%"> <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex-mbps-taskCompletion.png" alt="(b) Completion rates in AlexNet" width="95%"/><br> <b>(b) Completion rates in AlexNet</b> </td> </tr> </table> <p align="center"> <b>Fig. 11.</b> Effect of transmission rate on inference latency and task completion rate. </p>
 
-<p align="center">
-  <b>Fig. 12.</b> Effect of delay constraints.
-</p>
+Description:
 
-### 🧩 Example 7:  Effect of energy consumption constraints (Fig. 13)
+Fig. 11 evaluates how varying transmission rates influence inference latency and task completion rate in the MEOCI framework.
+As the available bandwidth increases (from 5 Mbps to 25 Mbps), the overall inference latency decreases due to reduced communication delay, while task completion rate improves steadily across all methods.
+The proposed ADP-D3QN–based MEOCI consistently achieves the lowest inference latency and highest completion rate, showcasing its adaptive offloading and model partitioning capability under diverse network conditions.
+In contrast, Vehicle-Only and Edge-Only methods exhibit limited adaptability — suffering from high latency and low completion rates at low bandwidth.
+These results demonstrate that MEOCI effectively utilizes available network resources, maintaining stable and efficient inference performance even under bandwidth constraints.
+
+```python
+# visualization/plot_transmission_effect.py
+import pandas as pd, matplotlib.pyplot as plt, argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--metric", type=str, required=True, help="latency or completion")
+parser.add_argument("--data", type=str, required=True, help="path to csv file")
+args = parser.parse_args()
+
+df = pd.read_csv(args.data)
+rates = df["Mbps"]
+methods = [c for c in df.columns if c != "Mbps"]
+
+plt.figure(figsize=(7,5))
+for method in methods:
+    plt.errorbar(rates, df[method], yerr=df.get("Std_"+method, None), label=method, linewidth=1.8)
+plt.xlabel("Data Transfer Rate (Mbps)")
+plt.grid(True, linestyle="--", alpha=0.6)
+
+if args.metric.lower() == "latency":
+    plt.ylabel("Average Inference Latency (ms)")
+    plt.title("Effect of Transmission Rate on Latency (AlexNet)")
+    plt.legend(fontsize=8)
+    plt.tight_layout()
+    plt.savefig("results/fig11a_latency_mbps_alexnet.png", dpi=300)
+
+elif args.metric.lower() == "completion":
+    plt.ylabel("Task Completion Rate (%)")
+    plt.title("Effect of Transmission Rate on Completion Rate (AlexNet)")
+    plt.legend(fontsize=8)
+    plt.tight_layout()
+    plt.savefig("results/fig11b_completion_mbps_alexnet.png", dpi=300)
+
+plt.show()
+```
+
+### 🧩 Effect of Delay Constraints (Fig. 12)
 
 ```bash
-python visualization/plot_completion_rate.py --data results/device_comparison.csv
+python visualization/plot_delay_constraints.py --metric accuracy --data results/delay_constraints_accuracy.csv
+python visualization/plot_delay_constraints.py --metric completion --data results/delay_constraints_completion.csv
 ```
 
 📊 Visualization Result:
 
-<p align="center">
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/resnet50_energy.png" alt="Fig13a" width="30%"/>
-  <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/yolov10_energy.png" alt="Fig11b" width="30%"/>
-</p>
+<table align="center"> <tr> <td align="center" width="50%"> <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex_delay_accu2.png" alt="(a) Accuracy" width="95%"/><br> <b>(a) Inference accuracy in AlexNet</b> </td> <td align="center" width="50%"> <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/alex_delay_completion.png" alt="(b) Completion Rate" width="95%"/><br> <b>(b) Completion rate in AlexNet</b> </td> </tr> </table> <p align="center"> <b>Fig. 12.</b> Effect of delay constraints on inference accuracy and task completion rate. </p>
 
-<p align="center">
-  <b>Fig. 13.</b> Effect of energy consumption constraints.
-</p>
+Description:
+
+Fig. 12 illustrates how different delay constraints affect inference accuracy and task completion rate in multi-exit DNN models under the MEOCI framework.
+As the delay constraint becomes more relaxed (from 15 ms to 25 ms), all methods show improved task completion rates due to fewer deadline violations.
+However, ADP-D3QN (MEOCI) consistently achieves the highest completion rate while maintaining stable accuracy, demonstrating its ability to balance precision and latency under strict real-time conditions.
+In contrast, traditional baselines such as Vehicle-Only and Edge-Only exhibit steep performance degradation when the delay constraint is tightened, highlighting their limited adaptability.
+These results validate that the joint optimization of model partitioning and early-exit point selection effectively enhances task reliability under dynamic vehicular edge environments.
+
+```python
+# visualization/plot_delay_constraints.py
+import pandas as pd, matplotlib.pyplot as plt, argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--metric", type=str, required=True, help="accuracy or completion")
+parser.add_argument("--data", type=str, required=True, help="path to csv file")
+args = parser.parse_args()
+
+df = pd.read_csv(args.data)
+delays = df["Delay(ms)"]
+methods = [c for c in df.columns if c != "Delay(ms)"]
+
+plt.figure(figsize=(7,5))
+for method in methods:
+    plt.bar([x + 0.1 * i for x in range(len(delays))], df[method], width=0.1, label=method)
+plt.xticks(range(len(delays)), [str(d) for d in delays])
+plt.xlabel("Delay Constraints (ms)")
+plt.grid(axis="y", linestyle="--", alpha=0.6)
+
+if args.metric.lower() == "accuracy":
+    plt.ylabel("Inference Accuracy (%)")
+    plt.title("Effect of Delay Constraints on Accuracy")
+    plt.legend(fontsize=8)
+    plt.tight_layout()
+    plt.savefig("results/fig12a_delay_accuracy.png", dpi=300)
+elif args.metric.lower() == "completion":
+    plt.ylabel("Task Completion Rate (%)")
+    plt.title("Effect of Delay Constraints on Completion Rate")
+    plt.legend(fontsize=8)
+    plt.tight_layout()
+    plt.savefig("results/fig12b_delay_completion.png", dpi=300)
+plt.show()
+```
+
+### 🧩 Effect of Energy Consumption Constraints (Fig. 13)
+
+```bash
+python visualization/plot_energy_constraints.py --model resnet50 --data results/energy_constraints_resnet50.csv
+python visualization/plot_energy_constraints.py --model yolov10n --data results/energy_constraints_yolov10n.csv
+```
+
+📊 Visualization Result:
+
+<table align="center"> <tr> <td align="center" width="50%"> <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/resnet50_energy.png" alt="(a) ResNet50" width="95%"/><br> <b>(a) ResNet50</b> </td> <td align="center" width="50%"> <img src="https://meoci.oss-cn-beijing.aliyuncs.com/Figure/yolov10_energy.png" alt="(b) YOLOv10n" width="95%"/><br> <b>(b) YOLOv10n</b> </td> </tr> </table> <p align="center"> <b>Fig. 13.</b> Effect of energy consumption constraints on average inference latency in heterogeneous DNN models. </p>
+
+Description:
+
+Fig. 13 analyzes how maximum energy consumption constraints affect inference latency in different DNN models under the MEOCI framework.
+When the allowable energy consumption increases, the system can allocate more computation to the vehicle and execute deeper model layers, thereby improving inference accuracy while maintaining low latency.
+The proposed ADP-D3QN–based MEOCI consistently achieves the lowest inference latency compared to Edge-Only and min-Energy baselines across all constraint levels.
+For both ResNet50 and YOLOv10n, MEOCI adapts the offloading and early-exit strategies according to available energy, achieving up to 30% latency reduction under tight energy budgets.
+These results demonstrate the framework’s capability to balance latency and energy efficiency dynamically, ensuring optimal performance in energy-constrained vehicular edge scenarios.
+
+```python
+# visualization/plot_energy_constraints.py
+import pandas as pd, matplotlib.pyplot as plt, argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--model", type=str, required=True, help="resnet50 or yolov10n")
+parser.add_argument("--data", type=str, required=True, help="path to csv file")
+args = parser.parse_args()
+
+df = pd.read_csv(args.data)
+energy = df["Energy(mJ)"]
+methods = [c for c in df.columns if c != "Energy(mJ)"]
+
+bar_width = 0.25
+x = range(len(energy))
+
+plt.figure(figsize=(7,5))
+for i, method in enumerate(methods):
+    plt.bar([p + i * bar_width for p in x], df[method], width=bar_width, label=method)
+
+plt.xticks([p + bar_width for p in x], [str(e) for e in energy])
+plt.xlabel("Maximum Energy Consumption (mJ)")
+plt.ylabel("Average Inference Latency (ms)")
+plt.legend(fontsize=8)
+plt.grid(axis="y", linestyle="--", alpha=0.6)
+plt.tight_layout()
+
+if args.model.lower() == "resnet50":
+    plt.title("Effect of Energy Constraints (ResNet50)")
+    plt.savefig("results/fig13a_energy_resnet50.png", dpi=300)
+elif args.model.lower() == "yolov10n":
+    plt.title("Effect of Energy Constraints (YOLOv10n)")
+    plt.savefig("results/fig13b_energy_yolov10n.png", dpi=300)
+plt.show()
+
+```
 
 ### 🧠 Notes
 
