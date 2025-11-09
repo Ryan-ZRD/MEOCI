@@ -1,0 +1,30 @@
+ablation:
+  scenarios:
+    - name: "Baseline_D3QN"
+      agent: "D3QN"
+      reward_function: "latency_only"
+      dual_buffer: false
+      adaptive_epsilon: false
+
+    - name: "Adaptive_D3QN"
+      agent: "A_D3QN"
+      reward_function: "latency_energy"
+      dual_buffer: false
+      adaptive_epsilon: true
+
+    - name: "DualPool_D3QN"
+      agent: "DP_D3QN"
+      reward_function: "joint_latency_energy"
+      dual_buffer: true
+      adaptive_epsilon: false
+
+    - name: "Full_ADP_D3QN"
+      agent: "ADP_D3QN"
+      reward_function: "joint_latency_energy_accuracy"
+      dual_buffer: true
+      adaptive_epsilon: true
+
+evaluation:
+  runs_per_scenario: 3
+  metrics: ["latency", "energy", "accuracy", "reward"]
+  output_dir: "./results/ablation/"

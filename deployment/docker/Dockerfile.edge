@@ -1,0 +1,78 @@
+# ============================================================
+# Dockerfile.edge
+# ------------------------------------------------------------
+# Edge-side container for the MEOCI framework
+# Provides collaborative inference and task management services
+# ============================================================
+
+# 1. Base image (optimized for inference workloads)
+FROM pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
+
+# ------------------------------------------------------------
+# 2. Metadata
+LABEL maintainer="MEOCI Research Group" \
+      description="Edge-side container for MEOCI Collaborative Inference System" \
+      version="1.0"
+
+# ------------------------------------------------------------
+# 3. Set working directory
+WORKDIR /workspace/meoci
+
+# ------------------------------------------------------------
+# 4. Copy required files from project root
+COPY ./core ./core
+COPY ./datasets ./datasets
+COPY ./utils ./utils
+COPY ./configs ./configs
+COPY ./experiments ./experiments
+COPY ./run.py ./run.py
+COPY ./config.py ./config.py
+COPY ./requirements.txt ./requirements.txt
+
+# ------------------------------------------------------------
+# 5. Install dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        git wget curl vim net-tools iputils-ping \
+        supervisor && \
+    rm -rf /var/lib/apt/lists/* && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir \
+        flask==3.0.2 \
+        flask-cors==4.0.0 \
+        numpy==1.26.3 \
+        pandas==2.1.4 \
+        psutil==5.9.7 \
+        tqdm==4.66.2 \
+        pyyaml==6.0.2 \
+        rich==13.7.0 \
+        matplotlib==3.8.2 \
+        opencv-python-headless==4.9.0.80 \
+        torchinfo==1.8.0
+
+# ------------------------------------------------------------
+# 6. Copy supervisor configuration for background services
+COPY ./deployment/scripts/supervisord_edge.conf /etc/supervisor/conf.d/supervisord.conf
+
+# ------------------------------------------------------------
+# 7. Environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONPATH="/workspace/meoci:${PYTHONPATH}" \
+    EDGE_NODE_ID="edge_server_01" \
+    VEHICLE_PORT=5001 \
+    EDGE_API_PORT=5000 \
+    CUDA_VISIBLE_DEVICES=0 \
+    FLASK_ENV=production
+
+# ------------------------------------------------------------
+# 8. Expose API and data transfer ports
+EXPOSE 5000/tcp
+EXPOSE 5001/tcp
+
+# ------------------------------------------------------------
+# 9. Start Supervisor to run both API and monitoring services
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+
+# ------------------------------------------------------------
+# 10. Health check (ensures REST API is responsive)
+HEALTHCHECK --interval=60s --timeout=10s --retries=3 \
+  CMD curl -f http://localhost:5000/health || exit 1

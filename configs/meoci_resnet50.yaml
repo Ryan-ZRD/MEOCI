@@ -1,0 +1,25 @@
+base:
+  - train_hyperparams.yaml
+  - env_cluster.yaml
+
+model:
+  name: "alexnet_me"
+  type: "MultiExitAlexNet"
+  num_classes: 10
+  num_exits: 3
+  exit_positions: [2, 4, 7]
+  backbone: "alexnet"
+  dropout_rate: 0.3
+  pretrained: false
+
+agent:
+  name: "ADP_D3QN"
+  epsilon_scheduler: "linear"
+  reward_function: "joint_latency_energy"
+  dual_buffer: true
+  policy_update_freq: 4
+
+experiment:
+  name: "MEOCI_AlexNet"
+  description: "Lightweight model for low-resource VEC nodes"
+  output_dir: "./results/alexnet/"

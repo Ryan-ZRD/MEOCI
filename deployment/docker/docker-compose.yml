@@ -1,0 +1,95 @@
+version: "3.9"
+
+# ============================================================
+# docker-compose.yml
+# ------------------------------------------------------------
+# Multi-container deployment for MEOCI framework
+# Includes:
+#   - edge_server: Edge-side inference & coordination node
+#   - vehicle_01:  Vehicular-side collaborative agent
+# ============================================================
+
+services:
+  # ----------------------------------------------------------
+  # Edge server (RSU / MEC node)
+  # ----------------------------------------------------------
+  edge_server:
+    container_name: meoci-edge
+    build:
+      context: ../..                     # Project root
+      dockerfile: deployment/docker/Dockerfile.edge
+    image: meoci-edge:latest
+    restart: unless-stopped
+    networks:
+      - meoci-net
+    environment:
+      - EDGE_NODE_ID=edge_server_01
+      - VEHICLE_PORT=5001
+      - EDGE_API_PORT=5000
+      - CUDA_VISIBLE_DEVICES=0
+      - FLASK_ENV=production
+    volumes:
+      - ../../results:/workspace/meoci/results
+      - ../../saved_models:/workspace/meoci/saved_models
+    ports:
+      - "5000:5000"                      # REST API endpoint
+      - "5001:5001"                      # Vehicle communication
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities:
+                - gpu
+
+  # ----------------------------------------------------------
+  # Vehicle node (collaborative agent)
+  # ----------------------------------------------------------
+  vehicle_01:
+    container_name: meoci-vehicle-01
+    build:
+      context: ../..                     # Project root
+      dockerfile: deployment/docker/Dockerfile.vehicle
+    image: meoci-vehicle:latest
+    restart: unless-stopped
+    networks:
+      - meoci-net
+    depends_on:
+      edge_server:
+        condition: service_healthy
+    environment:
+      - VEHICLE_NODE_ID=vehicle_01
+      - EDGE_SERVER_IP=edge_server
+      - EDGE_SERVER_PORT=5000
+      - CUDA_VISIBLE_DEVICES=0
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ../../results:/workspace/meoci/results
+      - ../../saved_models:/workspace/meoci/saved_models
+    command: ["--mode", "simulate", "--model", "vgg16", "--config", "configs/meoci_vgg16.yaml"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; s=socket.socket(); s.connect(('localhost',5001)); s.close()"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities:
+                - gpu
+
+# ------------------------------------------------------------
+# Shared network definition
+# ------------------------------------------------------------
+networks:
+  meoci-net:
+    driver: bridge

@@ -1,0 +1,52 @@
+# ============================================================
+# MEOCI: Model Partitioning and Early-Exit Joint Optimization
+# Vehicular Edge Collaborative Inference Framework
+# ============================================================
+# Tested Environment:
+#   Python >= 3.8
+#   CUDA >= 11.8
+#   PyTorch >= 2.1.0
+# ============================================================
+
+# --- Core Deep Learning Framework ---
+torch>=2.1.0
+torchvision>=0.16.0
+numpy>=1.24.0
+scipy>=1.11.0
+pandas>=2.1.0
+
+# --- Reinforcement Learning Utilities ---
+gym>=0.26.2
+tqdm>=4.66.0
+
+# --- Visualization & Plotting ---
+matplotlib>=3.8.0
+seaborn>=0.13.0
+plotly>=5.18.0
+
+# --- Logging & Monitoring ---
+tensorboard>=2.14.0
+psutil>=5.9.0
+flask>=3.0.0
+prometheus-client>=0.17.0
+influxdb-client>=1.41.0
+
+# --- Config & Utilities ---
+pyyaml>=6.0
+opencv-python>=4.8.0
+scikit-learn>=1.3.0
+colorlog>=6.8.2
+rich>=13.7.0
+
+# --- Development / Debugging Tools (optional) ---
+black>=24.0
+flake8>=6.1
+pytest>=8.0
+notebook>=7.0.0
+
+# ============================================================
+# Optional: You can install all dev dependencies via
+#     pip install -r requirements.txt
+# or only essential runtime dependencies via
+#     pip install -r requirements.txt --no-deps
+# ============================================================

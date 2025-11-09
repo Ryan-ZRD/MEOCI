@@ -1,0 +1,25 @@
+base:
+  - train_hyperparams.yaml
+  - env_cluster.yaml
+
+model:
+  name: "resnet50_me"
+  type: "MultiExitResNet50"
+  num_classes: 10
+  num_exits: 6
+  exit_positions: [3, 6, 9, 12, 15, 18]
+  backbone: "resnet50"
+  dropout_rate: 0.3
+  pretrained: true
+
+agent:
+  name: "ADP_D3QN"
+  epsilon_scheduler: "cosine"
+  reward_function: "dynamic_latency_energy_balance"
+  dual_buffer: true
+  policy_update_freq: 3
+
+experiment:
+  name: "MEOCI_ResNet50"
+  description: "Deeper network for robustness and scalability analysis"
+  output_dir: "./results/resnet50/"

@@ -1,0 +1,18 @@
+environment:
+  vehicles: 20
+  edge_servers: 3
+  bandwidth_mbps: [10, 20, 25]
+  noise_power_dbm: -95
+  transmission_power_dbm: 23
+  vehicle_speed_mps: [10, 20, 30]
+  mobility_model: "highway"
+  channel_model: "Rayleigh"
+  workload_generator: "Poisson"
+  max_task_queue: 10
+  task_size_mb: [5, 15]
+  computation_demand_flop: [1e8, 5e8]
+  energy_coefficient: 2.5e-9
+  reward_weights:
+    latency: 0.6
+    energy: 0.3
+    accuracy: 0.1

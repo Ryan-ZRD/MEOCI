@@ -1,0 +1,28 @@
+training:
+  seed: 42
+  device: "cuda"
+  epochs: 200
+  batch_size: 32
+  lr: 0.0005
+  gamma: 0.99
+  epsilon:
+    start: 1.0
+    end: 0.05
+    decay: 0.995
+  memory_capacity: 50000
+  update_target_freq: 200
+  gradient_clip: 5.0
+  optimizer: "Adam"
+  loss_fn: "MSELoss"
+
+evaluation:
+  eval_interval: 10
+  num_eval_episodes: 5
+  save_best_model: true
+  log_interval: 5
+
+logging:
+  log_dir: "./results/logs/"
+  tensorboard_dir: "./results/tensorboard/"
+  save_model_dir: "./saved_models/"
+  csv_log: true

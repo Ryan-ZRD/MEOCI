@@ -1,0 +1,25 @@
+base:
+  - train_hyperparams.yaml
+  - env_cluster.yaml
+
+model:
+  name: "vgg16_me"
+  type: "MultiExitVGG16"
+  num_classes: 10
+  num_exits: 4
+  exit_positions: [5, 9, 13, 16]
+  backbone: "vgg16_bn"
+  dropout_rate: 0.4
+  pretrained: true
+
+agent:
+  name: "ADP_D3QN"
+  epsilon_scheduler: "adaptive"
+  reward_function: "joint_latency_energy_accuracy"
+  dual_buffer: true
+  policy_update_freq: 5
+
+experiment:
+  name: "MEOCI_VGG16"
+  description: "Primary experiment model used in main paper (Fig.7–13)"
+  output_dir: "./results/vgg16/"

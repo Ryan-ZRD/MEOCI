@@ -1,0 +1,77 @@
+# ============================================================
+# Dockerfile.vehicle
+# ------------------------------------------------------------
+# Vehicular-side runtime container for MEOCI framework
+# Supports: local inference, offloading simulation, and DRL agent execution
+# ============================================================
+
+# 1. Base image (lightweight PyTorch runtime)
+FROM pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
+
+# ------------------------------------------------------------
+# 2. Metadata
+LABEL maintainer="MEOCI Research Group" \
+      description="Vehicle-side container for collaborative inference in VEC" \
+      version="1.0"
+
+# ------------------------------------------------------------
+# 3. Set working directory
+WORKDIR /workspace/meoci
+
+# ------------------------------------------------------------
+# 4. Copy project files
+# (Assumes build context is project root)
+COPY ./core ./core
+COPY ./datasets ./datasets
+COPY ./utils ./utils
+COPY ./configs ./configs
+COPY ./experiments ./experiments
+COPY ./run.py ./run.py
+COPY ./config.py ./config.py
+COPY ./requirements.txt ./requirements.txt
+
+# ------------------------------------------------------------
+# 5. Install dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        git wget vim net-tools iproute2 iputils-ping curl && \
+    rm -rf /var/lib/apt/lists/* && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir \
+        opencv-python-headless==4.9.0.80 \
+        matplotlib==3.8.2 \
+        pandas==2.1.4 \
+        numpy==1.26.3 \
+        scipy==1.11.4 \
+        psutil==5.9.7 \
+        tqdm==4.66.2 \
+        pyyaml==6.0.2 \
+        rich==13.7.0 \
+        torchinfo==1.8.0
+
+# ------------------------------------------------------------
+# 6. Environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONPATH="/workspace/meoci:${PYTHONPATH}" \
+    DEBIAN_FRONTEND=noninteractive \
+    VEHICLE_NODE_ID="vehicle_01" \
+    EDGE_SERVER_IP="edge_server" \
+    EDGE_SERVER_PORT=5000 \
+    CUDA_VISIBLE_DEVICES=0
+
+# ------------------------------------------------------------
+# 7. Default runtime commands
+# Supports three execution modes:
+#   - "train" → train ADP-D3QN agent locally
+#   - "infer" → run collaborative inference task
+#   - "simulate" → run end-to-end simulation with edge communication
+ENTRYPOINT ["python", "run.py"]
+CMD ["--mode", "infer", "--model", "vgg16", "--config", "configs/meoci_vgg16.yaml"]
+
+# ------------------------------------------------------------
+# 8. Expose ports for inter-container communication
+EXPOSE 5001/tcp
+
+# ------------------------------------------------------------
+# 9. Health check to ensure container is alive and responsive
+HEALTHCHECK --interval=60s --timeout=10s --retries=3 \
+  CMD python -c "import socket; s=socket.socket(); s.connect(('localhost',5001)); s.close()" || exit 1
