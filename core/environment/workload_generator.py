@@ -2,25 +2,19 @@ import numpy as np
 from typing import Dict, List, Tuple
 
 
-class WorkloadGenerator:
-    """
-    Workload Generation Model for Vehicular Edge Inference
-    ----------------------------------------------------------
-    Simulates the task arrival process and task properties
-    in the vehicular edge computing environment.
+class SimpleTask(dict):
+    """Allow both dict and attribute access: task.flops or task['flops']."""
+    def __getattr__(self, item):
+        return self[item]
 
-    Implements:
-      - Poisson task arrival (λ)
-      - Task size sampling (input data)
-      - Computation complexity (FLOPs)
-      - Delay constraint generation
-      - Task feature vector output for DRL state input
-    """
+
+class WorkloadGenerator:
+
 
     def __init__(self,
-                 arrival_rate: float = 2.0,             # λ (tasks/s)
+                 arrival_rate: float = 2.0,                          # tasks/s
                  data_size_range: Tuple[float, float] = (2.0, 20.0),  # MB
-                 flops_range: Tuple[float, float] = (0.2, 3.0),       # GFLOPs
+                 flops_range: Tuple[float, float] = (0.2, 3.0),        # GFLOPs
                  delay_constraint_range: Tuple[float, float] = (50, 150),  # ms
                  random_seed: int = 42):
         self.arrival_rate = arrival_rate
@@ -32,25 +26,47 @@ class WorkloadGenerator:
         self.task_id_counter = 0
         self.generated_tasks = []
 
-    # ----------------------------------------------------------
-    # Task arrival simulation (Poisson process)
-    # ----------------------------------------------------------
-    def poisson_arrival(self, time_window: float = 1.0) -> int:
-        """
-        Sample number of task arrivals within a time window (in seconds).
-        N ~ Poisson(λ * Δt)
-        """
-        expected_tasks = self.arrival_rate * time_window
-        num_tasks = self.random_state.poisson(expected_tasks)
-        return num_tasks
 
-    # ----------------------------------------------------------
-    # Generate a single task
-    # ----------------------------------------------------------
+    def get_current_rate(self) -> float:
+        return float(self.arrival_rate)
+
+    def generate_tasks(self,
+                       num_vehicles: int,
+                       total_layers: int = 10,
+                       exit_points: int = 4) -> List[SimpleTask]:
+
+        tasks = []
+        for _ in range(num_vehicles):
+            t = self.generate_task()
+
+            # -------- base --------
+            t["size_mb"] = float(t["data_size_MB"])
+            t["flops"] = float(t["compute_flops_GFLOPs"]) * 1e9  # GFLOPs -> FLOPs
+            t["total_layers"] = int(total_layers)
+
+            # -------- vehicle_node required --------
+            t["feature_size_mb_per_layer"] = t["size_mb"] / max(t["total_layers"], 1)
+            t["enable_early_exit"] = True
+            t["exit_layer"] = int(self.random_state.randint(0, t["total_layers"]))
+
+            # exit accuracy: deeper exit -> higher acc (0.70 -> 0.95)
+            if t["total_layers"] > 1:
+                depth_ratio = t["exit_layer"] / (t["total_layers"] - 1)
+            else:
+                depth_ratio = 0.0
+            t["exit_accuracy"] = float(0.70 + 0.25 * depth_ratio)
+
+            # -------- edge_server required --------
+            t["arrival_rate"] = float(self.arrival_rate)
+            t["exit_points"] = int(exit_points)
+
+            tasks.append(SimpleTask(t))
+
+        return tasks
+
+
     def generate_task(self) -> Dict:
-        """
-        Generate one inference task with random attributes.
-        """
+        """Generate one raw task (without compatibility alias fields)."""
         self.task_id_counter += 1
         task_id = self.task_id_counter
 
@@ -60,62 +76,51 @@ class WorkloadGenerator:
 
         task = {
             "id": task_id,
-            "data_size_MB": round(data_size, 2),
-            "compute_flops_GFLOPs": round(compute_flops, 3),
-            "delay_constraint_ms": round(delay_constraint, 1),
+            "data_size_MB": round(float(data_size), 2),
+            "compute_flops_GFLOPs": round(float(compute_flops), 3),
+            "delay_constraint_ms": round(float(delay_constraint), 1),
         }
 
         self.generated_tasks.append(task)
         return task
 
-    # ----------------------------------------------------------
-    # Generate multiple tasks within Δt
-    # ----------------------------------------------------------
+
+    def poisson_arrival(self, time_window: float = 1.0) -> int:
+        expected_tasks = self.arrival_rate * time_window
+        return int(self.random_state.poisson(expected_tasks))
+
     def generate_tasks_in_window(self, time_window: float = 1.0) -> List[Dict]:
-        """
-        Generate a batch of tasks during the current time window.
-        """
         num_tasks = self.poisson_arrival(time_window)
         return [self.generate_task() for _ in range(num_tasks)]
 
-    # ----------------------------------------------------------
-    # Task feature encoding for DRL state vector
-    # ----------------------------------------------------------
-    @staticmethod
-    def encode_task_features(task: Dict) -> np.ndarray:
-        """
-        Convert task attributes into normalized feature vector.
-        Example output: [data_size_norm, compute_norm, deadline_norm]
-        """
-        data_norm = task["data_size_MB"] / 20.0
-        flops_norm = task["compute_flops_GFLOPs"] / 3.0
-        delay_norm = task["delay_constraint_ms"] / 150.0
-        return np.array([data_norm, flops_norm, delay_norm], dtype=np.float32)
 
-    # ----------------------------------------------------------
-    # Utility: summary
-    # ----------------------------------------------------------
     def summary(self, last_n: int = 5) -> Dict:
         if len(self.generated_tasks) == 0:
             return {"num_tasks": 0, "avg_data_MB": 0, "avg_flops": 0}
+
         tasks = self.generated_tasks[-last_n:]
         avg_data = np.mean([t["data_size_MB"] for t in tasks])
         avg_flops = np.mean([t["compute_flops_GFLOPs"] for t in tasks])
         avg_deadline = np.mean([t["delay_constraint_ms"] for t in tasks])
+
         return {
             "recent_tasks": len(tasks),
-            "avg_data_MB": round(avg_data, 2),
-            "avg_flops_GFLOPs": round(avg_flops, 3),
-            "avg_deadline_ms": round(avg_deadline, 1)
+            "avg_data_MB": round(float(avg_data), 2),
+            "avg_flops_GFLOPs": round(float(avg_flops), 3),
+            "avg_deadline_ms": round(float(avg_deadline), 1)
         }
 
 
-
 if __name__ == "__main__":
-    generator = WorkloadGenerator(arrival_rate=3.0)
-    for step in range(5):
-        tasks = generator.generate_tasks_in_window()
-        print(f"[t={step}] Generated {len(tasks)} tasks.")
-        if tasks:
-            print("Sample task:", tasks[0])
-    print("Summary:", generator.summary())
+    gen = WorkloadGenerator(arrival_rate=3.0)
+    tasks = gen.generate_tasks(num_vehicles=3, total_layers=10, exit_points=4)
+    for t in tasks:
+        print("Task sample:", t)
+        print("  size_mb:", t.size_mb)
+        print("  flops:", t.flops)
+        print("  total_layers:", t.total_layers)
+        print("  feature_size_mb_per_layer:", t.feature_size_mb_per_layer)
+        print("  exit_layer:", t.exit_layer)
+        print("  exit_accuracy:", t.exit_accuracy)
+        print("  arrival_rate:", t.arrival_rate)
+        print("  exit_points:", t.exit_points)

@@ -1,17 +1,16 @@
 import os
 import csv
 import json
-import time
 import logging
+import shutil
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List, Tuple
 
 import numpy as np
 from torch.utils.tensorboard import SummaryWriter
 
 
 class ExperimentLogger:
-
 
     def __init__(
         self,
@@ -20,101 +19,91 @@ class ExperimentLogger:
         enable_tensorboard: bool = True,
         overwrite: bool = False,
     ):
-
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.exp_name = exp_name
         self.root = os.path.join(log_dir, f"{exp_name}_{timestamp}")
 
         if overwrite and os.path.exists(self.root):
-            os.system(f"rm -rf {self.root}")
+            shutil.rmtree(self.root)
+
         os.makedirs(self.root, exist_ok=True)
 
-        # File paths
         self.txt_log = os.path.join(self.root, "train_log.txt")
         self.csv_log = os.path.join(self.root, "metrics_log.csv")
         self.json_log = os.path.join(self.root, "episode_records.json")
 
-        # Console + file logger
         self.logger = self._init_logger()
-
-        # TensorBoard writer
         self.writer = SummaryWriter(log_dir=self.root) if enable_tensorboard else None
 
-        # Metrics buffer
         self.metrics_buffer = []
-
-        self.logger.info(f"🚀 Logger initialized at {self.root}")
-
+        self.logger.info(f"Logger initialized at {self.root}")
 
     def _init_logger(self):
         logger = logging.getLogger(self.exp_name)
         logger.setLevel(logging.INFO)
-        formatter = logging.Formatter("[%(asctime)s] [%(levelname)s]  %(message)s", "%Y-%m-%d %H:%M:%S")
 
-        # Console handler
+        if logger.handlers:
+            return logger
+
+        formatter = logging.Formatter(
+            "[%(asctime)s] [%(levelname)s]  %(message)s",
+            "%Y-%m-%d %H:%M:%S"
+        )
+
         ch = logging.StreamHandler()
         ch.setLevel(logging.INFO)
         ch.setFormatter(formatter)
         logger.addHandler(ch)
 
-        # File handler
-        fh = logging.FileHandler(self.txt_log)
+        fh = logging.FileHandler(self.txt_log, encoding="utf-8")
         fh.setLevel(logging.INFO)
         fh.setFormatter(formatter)
         logger.addHandler(fh)
+
         return logger
 
+    def info(self, msg: str):
+        self.logger.info(msg)
+
+    def log_scalar(self, tag: str, value: float, step: int):
+        if self.writer:
+            self.writer.add_scalar(tag, value, step)
+        self.logger.info(f"[Scalar] {tag}={value:.4f} @ step={step}")
 
     def log_metrics(self, step: int, metrics: Dict[str, Any], prefix: str = ""):
-        """
-        Log a dictionary of metrics to file, CSV, and TensorBoard.
-        """
-        log_str = " | ".join([f"{k}={v:.4f}" if isinstance(v, (float, np.floating)) else f"{k}={v}"
-                              for k, v in metrics.items()])
+        log_str = " | ".join([
+            f"{k}={v:.4f}" if isinstance(v, (float, np.floating)) else f"{k}={v}"
+            for k, v in metrics.items()
+        ])
         self.logger.info(f"[{prefix}] Step {step:05d} | {log_str}")
 
-        # Append to buffer
         record = {"step": step}
         record.update(metrics)
         self.metrics_buffer.append(record)
 
-        # CSV write
         self._append_csv(record)
 
-        # TensorBoard logging
         if self.writer:
             for k, v in metrics.items():
                 if isinstance(v, (float, int)):
                     self.writer.add_scalar(f"{prefix}/{k}", v, step)
 
-
     def _append_csv(self, record: Dict[str, Any]):
         file_exists = os.path.exists(self.csv_log)
-        with open(self.csv_log, "a", newline="") as f:
+        with open(self.csv_log, "a", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=list(record.keys()))
             if not file_exists:
                 writer.writeheader()
             writer.writerow(record)
 
-
-    def log_episode_summary(self, episode: int, summary: Dict[str, Any]):
-        """
-        Log per-episode summary (avg latency, energy, reward, accuracy, etc.)
-        """
-        self.logger.info(f"[Episode {episode:03d}] Summary: {json.dumps(summary, indent=2)}")
-        with open(self.json_log, "a") as f:
-            json.dump({"episode": episode, **summary}, f)
-            f.write("\n")
-
-
-    def log_progress(self, episode: int, total: int, reward: float, latency: float, acc: float):
-        """
-        Print compact training progress line (for RL agent)
-        """
-        pct = (episode / total) * 100
-        msg = f"[{episode:03d}/{total}] {pct:6.2f}% | Reward={reward:.3f} | Lat={latency:.2f}ms | Acc={acc:.2f}%"
-        self.logger.info(msg)
-
+    def save_csv(self, path: str, headers: List[str], rows: List[Tuple]):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(headers)
+            for r in rows:
+                writer.writerow(list(r))
+        self.logger.info(f"[Logger] Saved CSV -> {path}")
 
     def close(self):
         if self.writer:
@@ -123,45 +112,9 @@ class ExperimentLogger:
         self.logger.info("[Logger] Closed successfully.")
         self._save_metrics_buffer()
 
-
     def _save_metrics_buffer(self):
         if len(self.metrics_buffer) > 0:
             out_path = os.path.join(self.root, "metrics_buffer.json")
-            with open(out_path, "w") as f:
-                json.dump(self.metrics_buffer, f, indent=2)
+            with open(out_path, "w", encoding="utf-8") as f:
+                json.dump(self.metrics_buffer, f, indent=2, ensure_ascii=False)
             self.logger.info(f"[Logger] Saved {len(self.metrics_buffer)} metrics to {out_path}")
-
-
-    def export_plot_data(self, out_csv: Optional[str] = None):
-        """
-        Export all metrics to a CSV for visualization (used in Fig.7–10 plots).
-        """
-        if not self.metrics_buffer:
-            self.logger.warning("[Logger] No metrics to export.")
-            return
-
-        if out_csv is None:
-            out_csv = os.path.join(self.root, "metrics_export.csv")
-
-        keys = list(self.metrics_buffer[0].keys())
-        with open(out_csv, "w", newline="") as f:
-            writer = csv.DictWriter(f, fieldnames=keys)
-            writer.writeheader()
-            writer.writerows(self.metrics_buffer)
-
-        self.logger.info(f"[Logger] Exported metrics to {out_csv}")
-
-
-
-if __name__ == "__main__":
-    logger = ExperimentLogger(exp_name="adp_d3qn_train", enable_tensorboard=False)
-    for step in range(1, 6):
-        logger.log_metrics(step, {
-            "reward": np.random.uniform(-1, 1),
-            "latency": np.random.uniform(20, 35),
-            "accuracy": np.random.uniform(80, 95)
-        }, prefix="train")
-
-    summary = {"latency": 28.7, "energy": 4.1, "accuracy": 90.2, "reward": 0.57}
-    logger.log_episode_summary(episode=1, summary=summary)
-    logger.close()

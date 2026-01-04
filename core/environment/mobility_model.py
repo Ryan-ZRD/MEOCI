@@ -3,18 +3,7 @@ import numpy as np
 
 
 class MobilityModel:
-    """
-    Vehicular Mobility Model
-    ----------------------------------------------------------
-    Simulates the mobility of vehicles in a VEC environment.
-    Used for dynamic bandwidth & latency estimation.
 
-    Implements:
-      - Position, velocity, and acceleration
-      - RSU coverage area detection
-      - Distance-based path loss
-      - Speed variation following Gaussian–Markov model (§4.1.4)
-    """
 
     def __init__(self,
                  road_length: float = 1000.0,     # meters
@@ -41,9 +30,6 @@ class MobilityModel:
         self.history_pos = [self.position]
         self.history_speed = [self.speed]
 
-    # ----------------------------------------------------------
-    # Update mobility state
-    # ----------------------------------------------------------
     def step(self):
 
         mean_speed = self.max_speed / 2.0
@@ -64,38 +50,24 @@ class MobilityModel:
 
         return self.position, self.speed
 
-    # ----------------------------------------------------------
-    # Distance to RSU
-    # ----------------------------------------------------------
     def distance_to_rsu(self) -> float:
         """
         Compute absolute distance to RSU.
         """
         return abs(self.position - self.rsu_position)
 
-    # ----------------------------------------------------------
-    # Check if inside RSU coverage
-    # ----------------------------------------------------------
     def in_coverage(self) -> bool:
         return self.distance_to_rsu() <= self.coverage_radius
 
-    # ----------------------------------------------------------
-    # Path loss model
-    # ----------------------------------------------------------
     def path_loss_db(self) -> float:
-        """
-        Compute large-scale path loss using log-distance model:
-        PL(dB) = PL0 + 10 * n * log10(d / d0)
-        """
+
         d0 = 1.0  # reference distance
         pl0 = 40.0  # path loss at d0
         n = 2.7     # path loss exponent (urban)
         d = max(self.distance_to_rsu(), d0)
         return pl0 + 10 * n * np.log10(d / d0)
 
-    # ----------------------------------------------------------
-    # Compute mobility impact factor
-    # ----------------------------------------------------------
+
     def mobility_factor(self) -> float:
         """
         A normalized factor (0.5–2.0) affecting bandwidth dynamics.
@@ -104,9 +76,6 @@ class MobilityModel:
         factor = 1.0 + (dist / self.coverage_radius)
         return np.clip(factor, 0.5, 2.0)
 
-    # ----------------------------------------------------------
-    # Trajectory summary
-    # ----------------------------------------------------------
     def summary(self) -> dict:
         avg_speed = np.mean(self.history_speed[-10:]) if len(self.history_speed) > 1 else self.speed
         return {

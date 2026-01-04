@@ -13,6 +13,7 @@ from utils.logger import ExperimentLogger
 
 class VehicularEdgeEnv:
 
+
     def __init__(self,
                  model_layers: int = 10,
                  exit_points: int = 4,
@@ -20,146 +21,168 @@ class VehicularEdgeEnv:
                  logger: ExperimentLogger = None,
                  bandwidth_range: Tuple[float, float] = (5, 25),
                  seed: int = 42):
-        self.logger = logger or Logger()
-        self.model_layers = model_layers
-        self.exit_points = exit_points
-        self.num_vehicles = num_vehicles
-        self.bandwidth_range = bandwidth_range
 
-        # Initialize subsystems
+        # Logger is managed externally
+        self.logger = logger
+
+        # Core parameters
+        self.model_layers = int(model_layers)
+        self.exit_points = int(exit_points)
+        self.num_vehicles = int(num_vehicles)
+        self.bandwidth_range = bandwidth_range
+        self.seed = int(seed)
+
+        # Subsystems
         self.channel = NetworkChannel(bandwidth_range=bandwidth_range)
         self.edge_server = EdgeServer(cpu_capacity=200, queue_capacity=100)
         self.vehicles = [VehicleNode(id=i) for i in range(num_vehicles)]
-        self.mobility = MobilityModel(seed=seed)
-        self.workload = WorkloadGenerator(seed=seed)
 
+        # Mobility model (global single state)
+        self.mobility = MobilityModel(seed=seed)
+
+
+        self.workload = WorkloadGenerator(random_seed=seed)
+
+        # Reward function must be instantiated (not static)
+        self.reward_fn = RewardFunction(
+            delay_ref_ms=4000.0,
+            energy_ref_mJ=1200.0,
+            reward_clip=True
+        )
+
+        # Bookkeeping
         self.current_step = 0
         self.state_dim = 4
-        self.action_dim = model_layers * exit_points
-
+        self.action_dim = self.model_layers * self.exit_points
         self.random_state = np.random.RandomState(seed)
-        self.logger.info(f"[VEC-ENV] Initialized with {num_vehicles} vehicles.")
 
-    # ----------------------------------------------------------
-    # Environment state
-    # ----------------------------------------------------------
+        if self.logger:
+            self.logger.info(f"[VEC-ENV] Initialized with {num_vehicles} vehicles.")
+
+
     def reset(self) -> np.ndarray:
         """Reset environment to initial state"""
         self.current_step = 0
         for v in self.vehicles:
             v.reset()
         self.edge_server.reset()
-        state = self._get_state()
-        return state
+        return self._get_state()
 
     def _get_state(self) -> np.ndarray:
-        """System-level state vector"""
+        """System-level state vector: [avg_acc, avg_queue_ratio, cpu_util, task_rate]"""
         avg_acc = np.mean([v.last_accuracy for v in self.vehicles])
-        avg_queue = self.edge_server.queue_length / self.edge_server.queue_capacity
+        avg_queue = self.edge_server.queue_length / max(self.edge_server.queue_capacity, 1)
         resource_util = self.edge_server.cpu_utilization
         task_rate = self.workload.get_current_rate()
 
         state = np.array([avg_acc, avg_queue, resource_util, task_rate], dtype=np.float32)
         return state
 
-    # ----------------------------------------------------------
-    # Action & Transition
-    # ----------------------------------------------------------
+
     def step(self, action: Tuple[int, int]) -> Tuple[np.ndarray, float, bool, Dict]:
-        """
-        Execute one environment step.
-        :param action: (partition_layer, exit_point)
-        :return: next_state, reward, done, info
-        """
+
         partition_layer, exit_point = action
         self.current_step += 1
 
-        # Update network dynamics
-        current_bw = self.channel.sample_bandwidth()
-        self.mobility.update_positions(self.vehicles)
 
-        # Generate workloads
-        new_tasks = self.workload.generate_tasks(self.num_vehicles)
+        current_bw = self.channel.sample_bandwidth()
+
+
+        self.mobility.step()
+
+
+        new_tasks = self.workload.generate_tasks(
+            self.num_vehicles,
+            total_layers=self.model_layers,
+            exit_points=self.exit_points
+        )
 
         total_latency, total_energy, total_acc = 0.0, 0.0, 0.0
 
+
         for v, task in zip(self.vehicles, new_tasks):
-            # 1. Vehicle performs shallow layer inference
+
+            # Vehicle shallow inference
             local_latency, local_energy = v.run_local_inference(partition_layer, task)
 
-            # 2. Upload intermediate features
+            # Communication delay: upload intermediate features
             comm_delay = self.channel.compute_delay(size_mb=task.size_mb, bandwidth=current_bw)
 
-            # 3. Edge server executes remaining layers
-            edge_latency, edge_energy, acc = self.edge_server.process_task(
-                task, partition_layer, exit_point)
+            # Edge compute remaining layers
+            edge_latency, edge_energy, acc = self.edge_server.process_task(task, partition_layer, exit_point)
 
-            total_latency += local_latency + comm_delay + edge_latency
-            total_energy += local_energy + edge_energy
-            total_acc += acc
+            # accumulate
+            total_latency += float(local_latency + comm_delay + edge_latency)
+            total_energy += float(local_energy + edge_energy)
+            total_acc += float(acc)
 
-        avg_latency = total_latency / self.num_vehicles
-        avg_energy = total_energy / self.num_vehicles
-        avg_accuracy = total_acc / self.num_vehicles
+        # avg metrics across vehicles
+        avg_latency = total_latency / max(self.num_vehicles, 1)
+        avg_energy = total_energy / max(self.num_vehicles, 1)
+        avg_accuracy = total_acc / max(self.num_vehicles, 1)
 
-        # Compute reward (negative cost)
-        reward = RewardFunction.compute_reward(latency=avg_latency,
-                                energy=avg_energy,
-                                accuracy=avg_accuracy)
 
-        # Update queue and system load
+        metrics_dict = {
+            "accuracy": float(avg_accuracy),
+            "latency_ms": float(avg_latency),
+            "energy_mJ": float(avg_energy * 1000.0),
+            "completion_rate": 1.0
+        }
+        reward = self.reward_fn.compute_reward(metrics_dict)
+
+
         self.edge_server.update_queue_load(len(new_tasks))
 
-        # Construct next state
+
         next_state = self._get_state()
 
-        # Done flag (episode termination)
+
         done = self.current_step >= 200
 
         info = {
-            "avg_latency": avg_latency,
-            "avg_energy": avg_energy,
-            "avg_accuracy": avg_accuracy,
-            "bandwidth": current_bw,
-            "edge_queue": self.edge_server.queue_length
+            "avg_latency": float(avg_latency),
+            "avg_energy": float(avg_energy),
+            "avg_accuracy": float(avg_accuracy),
+            "bandwidth": float(current_bw),
+            "edge_queue": float(self.edge_server.queue_length)
         }
 
-        # Logging
+
         if self.logger:
             self.logger.log_scalar("avg_latency", avg_latency, self.current_step)
             self.logger.log_scalar("avg_energy", avg_energy, self.current_step)
             self.logger.log_scalar("avg_accuracy", avg_accuracy, self.current_step)
+            self.logger.log_scalar("reward", reward, self.current_step)
 
-        return next_state, reward, done, info
+        return next_state, float(reward), bool(done), info
 
-    # ----------------------------------------------------------
-    # Utility
-    # ----------------------------------------------------------
+
     def sample_action(self) -> Tuple[int, int]:
-        """Sample a random (partition, exit) pair"""
+        """Sample random (partition_layer, exit_point)"""
         partition_layer = random.randint(0, self.model_layers - 1)
         exit_point = random.randint(1, self.exit_points)
         return partition_layer, exit_point
 
     def render(self):
-        """Optional visualization hook"""
         print(f"[Step {self.current_step}] Queue={self.edge_server.queue_length:.2f}, "
               f"Util={self.edge_server.cpu_utilization:.2f}")
 
     def get_env_stats(self) -> Dict[str, float]:
-        """Return environment-level volatility indicators"""
+
+        hist = getattr(self.channel, "history_bandwidth", [])[-10:]
+        bw_var = float(np.var(hist)) if len(hist) > 1 else 0.0
         return {
-            "bandwidth_var": np.var(self.channel.history_bandwidth[-10:]),
-            "load_factor": self.edge_server.cpu_utilization
+            "bandwidth_var": bw_var,
+            "load_factor": float(self.edge_server.cpu_utilization)
         }
 
 
-
 if __name__ == "__main__":
-    from utils.logger import Logger
-    env = VehicularEdgeEnv(logger=Logger(), num_vehicles=5)
+    logger = ExperimentLogger(enable_tensorboard=False)
+    env = VehicularEdgeEnv(logger=logger, num_vehicles=5, model_layers=10, exit_points=4)
     state = env.reset()
     for t in range(5):
-        a = env.sample_action()
-        next_state, r, done, info = env.step(a)
+        action = env.sample_action()
+        next_state, r, done, info = env.step(action)
         print(f"Step {t} | Reward={r:.3f} | Lat={info['avg_latency']:.2f} | Acc={info['avg_accuracy']:.2f}")
+    logger.close()

@@ -28,7 +28,8 @@ class ADP_D3QNAgent:
         self.batch_size = batch_size
         self.target_update_freq = target_update_freq
         self.global_step = 0
-        self.logger = logger or Logger()
+        self.logger = logger
+
 
         # ---- Core components ----
         self.q_network = DoubleDuelingDQN(state_dim, action_dim).to(device)
@@ -42,9 +43,6 @@ class ADP_D3QNAgent:
         self.training_loss = []
         self.rewards_record = []
 
-    # ------------------------------------------------------------
-    # Action selection
-    # ------------------------------------------------------------
     def select_action(self, state: np.ndarray, env_stats: Dict) -> int:
         """
         Select action according to adaptive ε-greedy policy.
@@ -68,21 +66,11 @@ class ADP_D3QNAgent:
             self.logger.log_scalar("epsilon", epsilon, self.global_step)
         return action
 
-    # ------------------------------------------------------------
-    # Transition storage
-    # ------------------------------------------------------------
     def store_transition(self, state, action, reward, next_state, done, td_error):
         """Store new experience into dual replay buffer"""
         self.replay_buffer.push(state, action, reward, next_state, done, td_error)
 
-    # ------------------------------------------------------------
-    # TD target computation
-    # ------------------------------------------------------------
     def compute_td_target(self, rewards, next_states, dones):
-        """
-        Compute TD target using Double DQN:
-            y_i = r_i + γ * Q_target(s', argmax_a' Q_online(s', a'))
-        """
         with torch.no_grad():
             q_next_online = self.q_network.online_net(next_states)
             best_actions = torch.argmax(q_next_online, dim=1, keepdim=True)
@@ -93,9 +81,6 @@ class ADP_D3QNAgent:
             td_target = rewards + self.gamma * (1 - dones) * target_q
         return td_target
 
-    # ------------------------------------------------------------
-    # Training step
-    # ------------------------------------------------------------
     def train_step(self):
         if len(self.replay_buffer) < self.batch_size:
             return None
@@ -143,9 +128,6 @@ class ADP_D3QNAgent:
         self.global_step += 1
         return loss.item(), float(rewards.mean().item())
 
-    # ------------------------------------------------------------
-    # Save & load
-    # ------------------------------------------------------------
     def save(self, path: str):
         checkpoint = {
             "model_state_dict": self.q_network.online_net.state_dict(),
@@ -165,9 +147,7 @@ class ADP_D3QNAgent:
         if self.logger:
             self.logger.info(f"Loaded ADP-D3QN agent from {path}")
 
-    # ------------------------------------------------------------
-    # Evaluation (inference only)
-    # ------------------------------------------------------------
+
     def evaluate(self, state: np.ndarray) -> Tuple[int, float]:
         """Evaluate deterministic policy (ε = 0)"""
         state_tensor = torch.tensor(state, dtype=torch.float32, device=self.device).unsqueeze(0)
@@ -177,9 +157,6 @@ class ADP_D3QNAgent:
             q_val = float(torch.max(q_values).item())
         return action, q_val
 
-    # ------------------------------------------------------------
-    # Logging utilities
-    # ------------------------------------------------------------
     def get_training_stats(self):
         return {
             "mean_loss": np.mean(self.training_loss[-50:]) if len(self.training_loss) > 0 else 0.0,
