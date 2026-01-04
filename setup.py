@@ -1,22 +1,8 @@
-"""
-setup.py
-------------------------------------------------------------
-Installation script for the MEOCI framework.
 
-Usage:
-    pip install -e .
-
-This enables editable installation for module imports such as:
-    from core.agent import agent_adp_d3qn
-    from visualization.ablation import plot_ablation_convergence
-------------------------------------------------------------
-"""
 
 from setuptools import setup, find_packages
 
-# ------------------------------------------------------------
-# Project metadata
-# ------------------------------------------------------------
+
 setup(
     name="MEOCI",
     version="1.0.0",
@@ -31,9 +17,7 @@ setup(
     url="https://github.com/YourUsername/MEOCI",
     license="MIT",
 
-    # --------------------------------------------------------
-    # Package discovery
-    # --------------------------------------------------------
+
     packages=find_packages(
         exclude=[
             "tests*",
@@ -47,9 +31,7 @@ setup(
 
     include_package_data=True,
 
-    # --------------------------------------------------------
-    # Dependencies (ensure reproducibility)
-    # --------------------------------------------------------
+
     install_requires=[
         "torch>=2.1.0",
         "torchvision>=0.16.0",
@@ -67,26 +49,20 @@ setup(
         "influxdb-client>=1.41.0",
     ],
 
-    # --------------------------------------------------------
-    # Optional dependencies (for visualization)
-    # --------------------------------------------------------
+
     extras_require={
         "dev": ["pytest>=8.0", "black>=24.0", "flake8>=6.1"],
         "visual": ["plotly>=5.18.0", "notebook>=7.0.0"]
     },
 
-    # --------------------------------------------------------
-    # Entry points for command-line interface
-    # --------------------------------------------------------
+
     entry_points={
         "console_scripts": [
             "meoci=run:main",
         ]
     },
 
-    # --------------------------------------------------------
-    # Python compatibility
-    # --------------------------------------------------------
+
     python_requires=">=3.8",
     classifiers=[
         "Programming Language :: Python :: 3",

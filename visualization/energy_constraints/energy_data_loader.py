@@ -1,15 +1,4 @@
-"""
-visualization.energy_constraints.energy_data_loader
----------------------------------------------------
-Utility functions for energy constraint experiments (Fig.14a–14b)
-in the MEOCI framework.
 
-Includes:
-    • load_energy_data()                → Load and validate CSV dataset
-    • summarize_energy_trends()         → Compute energy-latency trade-offs
-    • smooth_energy_curves()            → Apply exponential smoothing
-    • generate_synthetic_energy_data()  → Produce synthetic dataset for testing
-"""
 
 import os
 import pandas as pd
@@ -17,21 +6,11 @@ import numpy as np
 from visualization.shared_styles.smoothing import exponential_moving_average
 
 
-# ------------------------------------------------------------
-# 1. Load CSV Data
-# ------------------------------------------------------------
+
 def load_energy_data(
     csv_path: str = "visualization/data_csv/energy_constraints.csv"
 ) -> pd.DataFrame:
-    """
-    Load energy constraint dataset (CSV).
 
-    Args:
-        csv_path (str): Path to energy constraint CSV file.
-
-    Returns:
-        pd.DataFrame: Dataframe with 'Energy Constraint (mJ)' as first column.
-    """
     if not os.path.exists(csv_path):
         raise FileNotFoundError(f"Dataset not found: {csv_path}")
 
@@ -46,19 +25,9 @@ def load_energy_data(
     return df
 
 
-# ------------------------------------------------------------
-# 2. Statistical Summary
-# ------------------------------------------------------------
+
 def summarize_energy_trends(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Compute energy-related trend statistics for all methods.
 
-    Args:
-        df (pd.DataFrame): Dataset with energy constraint and metrics.
-
-    Returns:
-        pd.DataFrame: Summary of slope, efficiency gain, and total delta.
-    """
     base_col = "Energy Constraint (mJ)"
     methods = [c for c in df.columns if c != base_col]
     summary = []
@@ -80,20 +49,9 @@ def summarize_energy_trends(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(summary)
 
 
-# ------------------------------------------------------------
-# 3. Curve Smoothing
-# ------------------------------------------------------------
+
 def smooth_energy_curves(df: pd.DataFrame, alpha: float = 0.3) -> pd.DataFrame:
-    """
-    Apply exponential smoothing to each curve (excluding x-axis).
 
-    Args:
-        df (pd.DataFrame): Raw data.
-        alpha (float): Smoothing coefficient.
-
-    Returns:
-        pd.DataFrame: Smoothed dataframe.
-    """
     base_col = "Energy Constraint (mJ)"
     smoothed_df = df.copy()
 
@@ -104,20 +62,12 @@ def smooth_energy_curves(df: pd.DataFrame, alpha: float = 0.3) -> pd.DataFrame:
     return smoothed_df
 
 
-# ------------------------------------------------------------
-# 4. Synthetic Dataset Generator
-# ------------------------------------------------------------
+
 def generate_synthetic_energy_data(
     save_path: str = "visualization/data_csv/energy_constraints.csv",
     random_seed: int = 42
 ) -> None:
-    """
-    Generate synthetic dataset for energy constraint visualization.
 
-    Args:
-        save_path (str): Output CSV path.
-        random_seed (int): Random seed for reproducibility.
-    """
     np.random.seed(random_seed)
 
     # Define X-axis (energy constraints)
@@ -162,9 +112,7 @@ def generate_synthetic_energy_data(
     print(f"Columns: {', '.join(combined.columns)}")
 
 
-# ------------------------------------------------------------
-# 5. Quick Test
-# ------------------------------------------------------------
+
 if __name__ == "__main__":
     print(">>> Generating synthetic dataset for energy constraint experiments...")
     generate_synthetic_energy_data()

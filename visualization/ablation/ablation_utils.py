@@ -1,19 +1,3 @@
-"""
-visualization.ablation.ablation_utils
-----------------------------------------------------------
-Utility functions for Ablation Study visualization modules.
-
-Used by:
-    - plot_ablation_convergence.py
-    - plot_ablation_delay.py
-
-Provides:
-    - CSV data loader with validation
-    - Smoothing utilities wrapper
-    - Color and label standardization for algorithms
-    - Plot configuration helper (consistent grid, font, legend)
-"""
-
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -23,9 +7,7 @@ from visualization.shared_styles import (
 )
 
 
-# ------------------------------------------------------------
-# 1. Standardized algorithm color mapping
-# ------------------------------------------------------------
+
 COLOR_MAP = {
     "D3QN": "#1f77b4",         # Blue
     "A-D3QN": "#ff7f0e",       # Orange
@@ -34,9 +16,7 @@ COLOR_MAP = {
 }
 
 
-# ------------------------------------------------------------
-# 2. CSV Data Loading
-# ------------------------------------------------------------
+
 def load_ablation_csv(csv_path: str):
     """
     Load ablation data CSV (Reward or Delay).
@@ -58,9 +38,7 @@ def load_ablation_csv(csv_path: str):
     return df, algorithms
 
 
-# ------------------------------------------------------------
-# 3. Unified Plotting Helper
-# ------------------------------------------------------------
+
 def setup_plot(title: str, xlabel: str, ylabel: str):
     """
     Apply consistent style and labeling to ablation plots.
@@ -73,9 +51,7 @@ def setup_plot(title: str, xlabel: str, ylabel: str):
     plt.grid(True, linestyle="--", alpha=0.35)
 
 
-# ------------------------------------------------------------
-# 4. Plot Curve Function
-# ------------------------------------------------------------
+
 def plot_curves(df, algorithms, smooth=True, method="ema", ylabel=None):
     """
     Plot ablation comparison curves with consistent color and smoothing.
@@ -102,9 +78,6 @@ def plot_curves(df, algorithms, smooth=True, method="ema", ylabel=None):
     plt.tight_layout()
 
 
-# ------------------------------------------------------------
-# 5. Save Figure Helper
-# ------------------------------------------------------------
 def save_plot(path: str):
     """
     Save current figure to file.
@@ -115,9 +88,6 @@ def save_plot(path: str):
     print(f"[Saved] {path}")
 
 
-# ------------------------------------------------------------
-# 6. Example Demo (Optional)
-# ------------------------------------------------------------
 if __name__ == "__main__":
     import numpy as np
 

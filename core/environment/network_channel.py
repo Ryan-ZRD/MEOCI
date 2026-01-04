@@ -3,17 +3,6 @@ from typing import Tuple
 
 
 class NetworkChannel:
-    """
-    Network Channel Model for VEC System
-    ----------------------------------------------------------
-    Simulates the wireless channel between vehicles and RSU nodes.
-
-    Implements:
-      - Dynamic bandwidth sampling based on mobility
-      - Channel noise & SNR-dependent fluctuation
-      - Transmission delay computation
-      - Bandwidth variance history (for adaptive epsilon)
-    """
 
     def __init__(self,
                  bandwidth_range: Tuple[float, float] = (5, 25),  # Mbps
@@ -107,7 +96,7 @@ class NetworkChannel:
         }
 
 
-# ✅ Example quick test
+
 if __name__ == "__main__":
     channel = NetworkChannel(bandwidth_range=(5, 25))
     for step in range(10):

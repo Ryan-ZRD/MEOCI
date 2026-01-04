@@ -5,18 +5,6 @@ from collections import deque, namedtuple
 
 
 class ReplayBuffer:
-    """
-    Standard Experience Replay Buffer
-    -------------------------------------------------
-    Stores experience tuples (s, a, r, s', done) for training.
-
-    Parameters
-    ----------
-    capacity : int
-        Maximum number of experiences to store.
-    device : str
-        Target device ("cpu" or "cuda").
-    """
 
     def __init__(self, capacity: int, device: str = "cpu"):
         self.capacity = capacity
@@ -48,16 +36,6 @@ class ReplayBuffer:
 
 
 class DualPoolReplayBuffer:
-    """
-    Adaptive Dual-Pool Experience Replay (ADPER)
-    -------------------------------------------------
-    Implements the dual memory buffer mechanism described in:
-        Section 3.3 of the paper — "Adaptive Dual-Pool Dueling Double DQN (ADP-D3QN)"
-
-    - E1: Exploration Pool → high-uncertainty, low Q-value samples
-    - E2: Exploitation Pool → high-reward, stable samples
-    - λ(t): Adaptive sampling probability (decays over time)
-    """
 
     def __init__(self,
                  capacity_e1: int = 5000,
@@ -144,7 +122,6 @@ class DualPoolReplayBuffer:
 
 
 if __name__ == "__main__":
-    # ✅ Quick test
     buffer = DualPoolReplayBuffer(device="cpu")
 
     # Fake samples

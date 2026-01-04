@@ -1,46 +1,8 @@
-"""
-visualization.transmission_effect.transmission_data_loader
------------------------------------------------------------
-Utility for loading and validating transmission-rate experiment data.
-
-Description:
-    This module loads the experimental CSV file describing
-    the effect of wireless transmission rate (Mbps)
-    on inference latency (ms) and task completion rate (%).
-
-    Used by:
-        - plot_latency_vs_rate.py
-        - plot_completion_vs_rate.py
-
-Expected CSV Format:
------------------------------------------------------------
-Rate (Mbps),Vehicle-Only,Edge-Only,Edgent,FedAdapt,LBO,ADP-D3QN (Ours)
-1,210.5,190.3,155.4,132.1,120.2,102.7
-2,200.4,175.8,143.2,121.5,112.4,97.8
-4,185.2,160.6,133.4,112.2,104.6,92.5
-6,172.9,148.1,125.1,105.8,99.2,88.4
-8,165.6,140.5,120.0,101.4,96.1,86.0
-10,160.1,136.2,117.6,99.3,94.5,84.8
-"""
-
 import os
 import pandas as pd
 
 
 def load_transmission_data(csv_path: str = "visualization/data_csv/transmission_effect.csv") -> pd.DataFrame:
-    """
-    Load transmission rate experiment data.
-
-    Args:
-        csv_path (str): Path to the CSV file.
-
-    Returns:
-        pd.DataFrame: DataFrame containing transmission rate data.
-
-    Raises:
-        FileNotFoundError: If CSV file does not exist.
-        ValueError: If CSV is missing required columns.
-    """
     if not os.path.exists(csv_path):
         raise FileNotFoundError(f"Missing input CSV file: {csv_path}")
 
@@ -62,12 +24,7 @@ def load_transmission_data(csv_path: str = "visualization/data_csv/transmission_
 
 
 def summarize_transmission_data(df: pd.DataFrame) -> None:
-    """
-    Print summary statistics for the dataset.
 
-    Args:
-        df (pd.DataFrame): Loaded transmission rate data.
-    """
     rate_col = "Rate (Mbps)"
     methods = [c for c in df.columns if c != rate_col]
 
@@ -83,12 +40,7 @@ def summarize_transmission_data(df: pd.DataFrame) -> None:
 
 
 def generate_synthetic_transmission_data(output_path: str = "visualization/data_csv/transmission_effect.csv") -> None:
-    """
-    Generate a synthetic transmission-rate dataset for testing.
 
-    Args:
-        output_path (str): Path to save generated CSV.
-    """
     import numpy as np
 
     rates = np.array([1, 2, 4, 6, 8, 10])

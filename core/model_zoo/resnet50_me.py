@@ -6,23 +6,7 @@ from .base_multi_exit import MultiExitBase
 
 
 class MultiExitResNet50(MultiExitBase):
-    """
-    MultiExitResNet50
-    ==========================================================
-    Multi-exit variant of ResNet50 for adaptive edge inference
-    in vehicular edge computing (MEOCI framework).
 
-    Exit positions correspond to:
-      - conv2_x (after layer1)
-      - conv3_x (after layer2)
-      - conv4_x-1 (mid)
-      - conv4_x-3 (deep)
-      - conv5_x-1
-      - conv5_x-3 (final exit)
-
-    Paper References:
-      Section 4.2, Fig. 6(c), Table II
-    """
 
     def __init__(self, num_classes: int = 10):
         super(MultiExitResNet50, self).__init__(
@@ -33,9 +17,7 @@ class MultiExitResNet50(MultiExitBase):
         self.inplanes = 64
         self._build_model()
 
-    # ------------------------------------------------------------
-    # Basic ResNet block constructor
-    # ------------------------------------------------------------
+
     def _make_layer(self, block, planes, blocks, stride=1):
         downsample = None
         if stride != 1 or self.inplanes != planes * block.expansion:
@@ -51,9 +33,7 @@ class MultiExitResNet50(MultiExitBase):
             layers.append(block(self.inplanes, planes))
         return nn.Sequential(*layers)
 
-    # ------------------------------------------------------------
-    # Define ResNet50 backbone + multi-exit heads
-    # ------------------------------------------------------------
+
     def _build_model(self):
         self.feature_layers = nn.ModuleList([
             nn.Sequential(
@@ -79,9 +59,7 @@ class MultiExitResNet50(MultiExitBase):
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(2048, self.num_classes)
 
-    # ------------------------------------------------------------
-    # Forward with early-exit
-    # ------------------------------------------------------------
+
     def forward(self, x: torch.Tensor, exit_threshold: float = 0.9):
         """
         Forward pass with adaptive early exits based on confidence.
@@ -154,7 +132,7 @@ class MultiExitResNet50(MultiExitBase):
         return outputs
 
 
-# ✅ Example quick test
+
 if __name__ == "__main__":
     model = MultiExitResNet50(num_classes=10)
     model.summary()

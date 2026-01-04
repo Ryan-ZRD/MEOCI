@@ -1,31 +1,11 @@
-"""
-visualization.shared_styles.plot_style
-----------------------------------------------------------
-Defines the unified visual style for all figures in MEOCI paper.
 
-Applied to:
-    Fig.7–Fig.16 (Ablation, Exit Analysis, Scalability, etc.)
-
-Features:
-    - Consistent font sizes, line widths, and colors
-    - Latex-compatible rendering (if available)
-    - Grid and legend style for high-quality publications
-"""
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 
 
 def set_global_plot_style(dark_mode: bool = False):
-    """
-    Configure a unified, publication-ready plotting style.
 
-    Args:
-        dark_mode (bool): whether to enable dark background plotting.
-    """
-    # ------------------------------------------------------
-    # 1. Font & Global Aesthetic Settings
-    # ------------------------------------------------------
     mpl.rcParams.update({
         "font.family": "Times New Roman",
         "font.size": 12,
@@ -43,17 +23,12 @@ def set_global_plot_style(dark_mode: bool = False):
         "savefig.bbox": "tight",
     })
 
-    # ------------------------------------------------------
-    # 2. Enable LaTeX Rendering (if available)
-    # ------------------------------------------------------
     try:
         mpl.rc("text", usetex=True)
     except Exception:
         mpl.rc("text", usetex=False)
 
-    # ------------------------------------------------------
-    # 3. Color Theme Configuration
-    # ------------------------------------------------------
+
     if dark_mode:
         plt.style.use("dark_background")
         mpl.rcParams["axes.facecolor"] = "#1a1a1a"
@@ -68,9 +43,7 @@ def set_global_plot_style(dark_mode: bool = False):
         mpl.rcParams["axes.facecolor"] = "#FFFFFF"
         mpl.rcParams["figure.facecolor"] = "#FFFFFF"
 
-    # ------------------------------------------------------
-    # 4. Color Palette (Fixed for all figures)
-    # ------------------------------------------------------
+
     mpl.rcParams["axes.prop_cycle"] = mpl.cycler(
         color=[
             "#1f77b4",  # MEOCI - Blue
@@ -81,9 +54,7 @@ def set_global_plot_style(dark_mode: bool = False):
         ]
     )
 
-    # ------------------------------------------------------
-    # 5. Tick and Grid Customization
-    # ------------------------------------------------------
+
     mpl.rcParams["xtick.direction"] = "in"
     mpl.rcParams["ytick.direction"] = "in"
     mpl.rcParams["xtick.major.size"] = 4
@@ -92,18 +63,13 @@ def set_global_plot_style(dark_mode: bool = False):
     mpl.rcParams["ytick.major.width"] = 0.8
     mpl.rcParams["grid.linewidth"] = 0.7
 
-    # ------------------------------------------------------
-    # 6. Legend Style
-    # ------------------------------------------------------
     mpl.rcParams["legend.frameon"] = False
     mpl.rcParams["legend.loc"] = "best"
     mpl.rcParams["legend.handlelength"] = 2.5
     mpl.rcParams["legend.handletextpad"] = 0.4
     mpl.rcParams["legend.borderpad"] = 0.3
 
-    # ------------------------------------------------------
-    # 7. Figure Size (Default)
-    # ------------------------------------------------------
+
     mpl.rcParams["figure.figsize"] = [6.8, 4.2]
 
 
@@ -121,11 +87,7 @@ def set_ieee_style():
 
 
 def set_paper_style(conference: str = "IEEE"):
-    """
-    Apply customized visual tuning for specific publication targets.
-    Args:
-        conference: "IEEE", "Elsevier", "ACM", or "Nature"
-    """
+
     set_global_plot_style(dark_mode=False)
 
     if conference.upper() == "ELSEVIER":

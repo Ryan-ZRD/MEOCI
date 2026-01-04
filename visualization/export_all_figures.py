@@ -1,35 +1,9 @@
-"""
-visualization.export_all_figures
---------------------------------
-Master script to reproduce all figures (Fig.7–Fig.16)
-for the MEOCI framework.
-
-Features:
-    • Automatically generates all plots from submodules:
-        - ablation (Fig.7)
-        - exit_analysis (Fig.8)
-        - heterogeneous (Fig.9)
-        - accuracy_cdf (Fig.10)
-        - vehicle_effect (Fig.11)
-        - transmission_effect (Fig.12)
-        - delay_constraints (Fig.13)
-        - energy_constraints (Fig.14)
-        - scalability (Fig.15–16)
-    • Unified output path and format
-    • Configurable CLI arguments
-
-Usage:
-    python visualization/export_all_figures.py --output results/plots --format png
-"""
-
 import os
 import argparse
 import sys
 from pathlib import Path
 
-# ------------------------------------------------------------
-# Import all figure submodules
-# ------------------------------------------------------------
+
 from visualization.ablation.plot_ablation_convergence import plot_ablation_convergence
 from visualization.ablation.plot_ablation_delay import plot_ablation_delay
 
@@ -62,25 +36,14 @@ from visualization.scalability.plot_vehicle_scalability import plot_vehicle_scal
 from visualization.scalability.plot_computational_stress import plot_computational_stress
 
 
-# ------------------------------------------------------------
-# Helper: ensure output directories exist
-# ------------------------------------------------------------
+
 def ensure_dir(path: str):
     Path(path).mkdir(parents=True, exist_ok=True)
 
 
-# ------------------------------------------------------------
-# Master figure export pipeline
-# ------------------------------------------------------------
-def export_all_figures(output_dir: str = "results/plots", fmt: str = "png", overwrite: bool = True):
-    """
-    Export all MEOCI paper figures (Fig.7–16) in batch.
 
-    Args:
-        output_dir (str): Destination folder for exported figures.
-        fmt (str): Output image format ("png", "pdf", or "svg").
-        overwrite (bool): Whether to overwrite existing files.
-    """
+def export_all_figures(output_dir: str = "results/plots", fmt: str = "png", overwrite: bool = True):
+
     ensure_dir(output_dir)
     print(f"[INFO] Exporting figures to: {output_dir}")
     print(f"[INFO] Output format: .{fmt}")
@@ -125,9 +88,7 @@ def export_all_figures(output_dir: str = "results/plots", fmt: str = "png", over
     print(f"[DONE] All figures have been exported to: {output_dir}")
 
 
-# ------------------------------------------------------------
-# Command Line Interface
-# ------------------------------------------------------------
+
 def main():
     parser = argparse.ArgumentParser(description="Export all MEOCI paper figures (Fig.7–16).")
     parser.add_argument("--output", type=str, default="results/plots", help="Output directory for figures")

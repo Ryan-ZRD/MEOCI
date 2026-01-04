@@ -5,22 +5,7 @@ from .base_multi_exit import MultiExitBase
 
 
 class MultiExitAlexNet(MultiExitBase):
-    """
-    MultiExitAlexNet
-    ==========================================================
-    Multi-exit variant of AlexNet for collaborative inference
-    in vehicular edge computing.
 
-    This model introduces 4 exit branches positioned after:
-      - conv2
-      - conv4
-      - conv5
-      - fc7 (final exit)
-
-    References:
-      Section 4.2 - Multi-Exit Network Design
-      Fig. 6(a) and Table II of MEOCI paper.
-    """
 
     def __init__(self, num_classes: int = 10):
         super(MultiExitAlexNet, self).__init__(
@@ -29,9 +14,7 @@ class MultiExitAlexNet(MultiExitBase):
             num_classes=num_classes
         )
 
-    # ------------------------------------------------------------
-    # Build the network architecture with early exits
-    # ------------------------------------------------------------
+
     def _build_model(self):
         self.feature_layers = nn.ModuleList([
             nn.Sequential(
@@ -77,9 +60,7 @@ class MultiExitAlexNet(MultiExitBase):
         self._add_exit(in_channels=4096)   # after fc7
 
 
-    # ------------------------------------------------------------
-    # Forward override (handle fc exits properly)
-    # ------------------------------------------------------------
+
     def forward(self, x: torch.Tensor, exit_threshold: float = 0.9):
         """
         Forward pass with adaptive early exit.
@@ -116,7 +97,7 @@ class MultiExitAlexNet(MultiExitBase):
             return self.exits[idx](x)
 
 
-# ✅ Example usage
+
 if __name__ == "__main__":
     model = MultiExitAlexNet(num_classes=10)
     model.summary()

@@ -1,19 +1,3 @@
-"""
-utils.profiler
-==========================================================
-System and model performance profiler for MEOCI framework.
-----------------------------------------------------------
-Features:
-    - Real-time latency, throughput, and memory profiling
-    - CPU/GPU utilization monitoring
-    - Energy estimation for vehicular-edge workloads
-    - Export profiling logs to CSV/JSON
-Used in:
-    - core/simulation/*
-    - experiments/*
-    - deployment/monitoring/*
-"""
-
 import os
 import time
 import json
@@ -25,12 +9,7 @@ from typing import Optional, Dict, Any
 
 
 class Profiler:
-    """
-    Profiler
-    ======================================================
-    Monitors runtime performance metrics for both
-    training (agent) and inference (vehicular-edge tasks).
-    """
+
 
     def __init__(
         self,
@@ -46,18 +25,14 @@ class Profiler:
         self.start_time = None
         self.records = []
 
-    # ------------------------------------------------------------
-    # ⏱ Start Profiling Session
-    # ------------------------------------------------------------
+
     def start(self, label: str = "session"):
         self.start_time = time.time()
         self.records = []
         self.session_label = label
         print(f"[Profiler] Started session '{label}'")
 
-    # ------------------------------------------------------------
-    # ⏹ Stop Profiling
-    # ------------------------------------------------------------
+
     def stop(self) -> Dict[str, Any]:
         if self.start_time is None:
             raise RuntimeError("Profiler not started. Use start() before stop().")
@@ -67,14 +42,9 @@ class Profiler:
         print(f"[Profiler] Session '{self.session_label}' stopped after {duration:.2f}s")
         return avg_metrics
 
-    # ------------------------------------------------------------
-    # 🧩 Capture One Sample
-    # ------------------------------------------------------------
+
     def capture(self):
-        """
-        Capture one-time snapshot of system metrics.
-        Called periodically or manually during runtime.
-        """
+
         cpu = psutil.cpu_percent(interval=None)
         mem = psutil.virtual_memory().percent
         gpu_util, gpu_mem = 0.0, 0.0
@@ -94,37 +64,22 @@ class Profiler:
         time.sleep(self.sampling_interval)
         return record
 
-    # ------------------------------------------------------------
-    # 🔁 Continuous Monitoring
-    # ------------------------------------------------------------
     def monitor_loop(self, duration: float = 5.0):
-        """
-        Continuously record system metrics for given seconds.
-        """
+
         t_end = time.time() + duration
         while time.time() < t_end:
             self.capture()
         print(f"[Profiler] Collected {len(self.records)} samples in {duration:.1f}s")
 
-    # ------------------------------------------------------------
-    # ⚡ Energy Estimation
-    # ------------------------------------------------------------
+
     @staticmethod
     def estimate_energy(cpu_usage: float, gpu_usage: float, duration_s: float) -> float:
-        """
-        Estimate energy consumption in Joules.
-        Empirical model (edge device):
-            P_cpu ≈ 1.5 * cpu_usage (W)
-            P_gpu ≈ 3.0 * gpu_usage (W)
-        """
+
         P_cpu = 1.5 * cpu_usage / 100.0
         P_gpu = 3.0 * gpu_usage / 100.0
         energy = (P_cpu + P_gpu) * duration_s
         return energy
 
-    # ------------------------------------------------------------
-    # 📊 Aggregate Statistics
-    # ------------------------------------------------------------
     def _aggregate(self) -> Dict[str, float]:
         if not self.records:
             return {"cpu_avg": 0, "gpu_avg": 0, "mem_avg": 0}
@@ -139,13 +94,8 @@ class Profiler:
             "gpu_mem_avg(MB)": gpu_mem_avg,
         }
 
-    # ------------------------------------------------------------
-    # 💾 Save Logs
-    # ------------------------------------------------------------
     def save(self, fmt: str = "csv"):
-        """
-        Save profiling results to file.
-        """
+
         if not self.records:
             print("[Profiler] No records to save.")
             return
@@ -166,17 +116,9 @@ class Profiler:
 
         print(f"[Profiler] Saved logs to {path}")
 
-    # ------------------------------------------------------------
-    # 🧠 Profile Function (Decorator)
-    # ------------------------------------------------------------
+
     def profile_function(self, fn):
-        """
-        Decorator for profiling function latency and resource usage.
-        Example:
-            @profiler.profile_function
-            def run_inference(...):
-                ...
-        """
+
         def wrapper(*args, **kwargs):
             self.start(label=fn.__name__)
             t0 = time.time()
@@ -197,9 +139,7 @@ class Profiler:
         return wrapper
 
 
-# ------------------------------------------------------------
-# ✅ Example Usage
-# ------------------------------------------------------------
+
 if __name__ == "__main__":
     profiler = Profiler(exp_name="demo")
 

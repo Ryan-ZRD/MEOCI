@@ -1,24 +1,3 @@
-"""
-core.model_zoo
-============================================================
-Unified model registry for MEOCI framework.
-
-Provides dynamic import and model factory functions for:
-    - MultiExitAlexNet   (4 exits)
-    - MultiExitVGG16     (5 exits)
-    - MultiExitResNet50  (6 exits)
-    - MultiExitYOLOv10n  (3 exits)
-
-Usage:
-    from core.model_zoo import get_model
-
-    model = get_model("vgg16_me", num_classes=10)
-    logits, exit_id = model(x, exit_threshold=0.9)
-
-Paper Reference:
-    "MEOCI: Model Partitioning and Early-Exit Point Selection
-     Joint Optimization for Collaborative Inference in Vehicular Edge Computing"
-"""
 
 from .alexnet_me import MultiExitAlexNet
 from .vgg16_me import MultiExitVGG16
@@ -28,7 +7,7 @@ from .base_multi_exit import MultiExitBase
 
 
 # ------------------------------------------------------------
-# 🔹 Registry for supported models
+#  Registry for supported models
 # ------------------------------------------------------------
 MODEL_REGISTRY = {
     "alexnet_me": MultiExitAlexNet,
@@ -39,7 +18,7 @@ MODEL_REGISTRY = {
 
 
 # ------------------------------------------------------------
-# 🔹 Factory method
+#  Factory method
 # ------------------------------------------------------------
 def get_model(model_name: str, num_classes: int = 10, **kwargs):
     """
@@ -67,7 +46,7 @@ def get_model(model_name: str, num_classes: int = 10, **kwargs):
 
 
 # ------------------------------------------------------------
-# 🔹 List all available models
+#  List all available models
 # ------------------------------------------------------------
 def list_models(verbose: bool = False):
     """

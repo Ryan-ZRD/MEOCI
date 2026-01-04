@@ -1,12 +1,3 @@
-"""
-experiments.train_agent
-==========================================================
-Train ADP-D3QN agent within the MEOCI framework.
-----------------------------------------------------------
-Implements training loop, evaluation, logging and checkpointing.
-Used for main experiments (AlexNet / VGG16 / ResNet50).
-"""
-
 import os
 import time
 import torch
@@ -18,24 +9,18 @@ from configs import ConfigManager
 from utils.logger import ExperimentLogger
 from utils.checkpoint import CheckpointManager
 from utils.seed_utils import set_global_seed
-from utils.metrics import compute_latency_reward
+
 from utils.profiler import Profiler
 from utils.registry import MODEL_REGISTRY, AGENT_REGISTRY, ENV_REGISTRY
 
 # Core Modules
 from core.environment.vec_env import VehicularEdgeEnv
-from core.agent.agent_adp_d3qn import ADP_D3QN_Agent
+from core.agent.agent_adp_d3qn import ADP_D3QNAgent
 
 
-# ==========================================================
-# 🎯 Main Training Routine
-# ==========================================================
+
 def train(cfg_path: str):
-    """Train ADP-D3QN agent under MEOCI framework."""
 
-    # ------------------------------------------------------
-    # 🔧 Load Configurations
-    # ------------------------------------------------------
     cfg = ConfigManager(cfg_path).config
     set_global_seed(cfg["training"]["seed"])
     device = torch.device(cfg["training"].get("device", "cuda" if torch.cuda.is_available() else "cpu"))
@@ -50,13 +35,11 @@ def train(cfg_path: str):
     print(f"\n[MEOCI] Starting training for experiment: {exp_name}")
     print(f"[Device] Using {device}\n")
 
-    # ------------------------------------------------------
-    # 🧩 Initialize Environment, Model, and Agent
-    # ------------------------------------------------------
+
     env = VehicularEdgeEnv(cfg["environment"])
     model_type = cfg["model"]["type"]
 
-    # Dynamically instantiate model (via registry if available)
+
     if model_type in MODEL_REGISTRY.list_all():
         model = MODEL_REGISTRY.build(model_type, num_classes=cfg["model"]["num_classes"])
     else:
@@ -65,8 +48,7 @@ def train(cfg_path: str):
 
     model.to(device)
 
-    # Initialize agent
-    agent = ADP_D3QN_Agent(
+    agent = ADP_D3QNAgent(
         env=env,
         model=model,
         lr=cfg["training"]["lr"],
@@ -80,9 +62,7 @@ def train(cfg_path: str):
     print(f"[Init] Model: {cfg['model']['name']} | Agent: {cfg['agent']['name']}")
     print(f"[Env] Vehicles={env.num_vehicles}, RSUs={env.num_rsus}")
 
-    # ------------------------------------------------------
-    # ️ Training Loop
-    # ------------------------------------------------------
+
     episodes = cfg["training"]["epochs"]
     update_target_freq = cfg["training"]["update_target_freq"]
 
@@ -129,9 +109,7 @@ def train(cfg_path: str):
     profiler.stop()
     profiler.save(fmt="csv")
 
-    # ------------------------------------------------------
-    # 📊 Post-Training Summary
-    # ------------------------------------------------------
+
     avg_reward = np.mean(all_rewards[-10:])
     avg_latency = np.mean(all_latencies[-10:])
     print(f"\n✅ [Training Complete] Avg Reward={avg_reward:.3f}, Avg Latency={avg_latency:.2f} ms")
@@ -141,9 +119,7 @@ def train(cfg_path: str):
     logger.save_csv(os.path.join(output_dir, "latency_curve.csv"), ["episode", "latency"], list(zip(range(episodes), all_latencies)))
 
 
-# ==========================================================
-# 🚀 Entry Point
-# ==========================================================
+
 if __name__ == "__main__":
     import argparse
 

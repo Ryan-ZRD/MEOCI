@@ -110,7 +110,7 @@ class WorkloadGenerator:
         }
 
 
-# ✅ Example quick test
+
 if __name__ == "__main__":
     generator = WorkloadGenerator(arrival_rate=3.0)
     for step in range(5):

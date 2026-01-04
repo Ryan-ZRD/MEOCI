@@ -1,22 +1,3 @@
-"""
-visualization.ablation.plot_ablation_convergence
-----------------------------------------------------------
-Reproduces Fig.7(a): Convergence comparison in ablation studies.
-
-Compares reward convergence trends among:
-    - D3QN
-    - A-D3QN (Adaptive ε-Greedy)
-    - DP-D3QN (Dual-Pool)
-    - ADP-D3QN (Proposed, Adaptive Dual-Pool)
-
-Input CSV Format (data_csv/ablation_reward.csv):
-------------------------------------------------
-Episode, D3QN, A-D3QN, DP-D3QN, ADP-D3QN
-1, 0.12, 0.15, 0.18, 0.21
-2, 0.20, 0.25, 0.28, 0.33
-...
-"""
-
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -29,15 +10,6 @@ def plot_ablation_convergence(
     smooth: bool = True,
     method: str = "ema"
 ):
-    """
-    Plot reward convergence of different DRL algorithms.
-
-    Args:
-        csv_path (str): Path to CSV file with episode reward data.
-        save_path (str): Path to save output figure.
-        smooth (bool): Apply curve smoothing.
-        method (str): Smoothing method ('ema', 'ma', 'sg', 'gaussian').
-    """
     # Ensure consistent plot style
     set_global_plot_style()
 

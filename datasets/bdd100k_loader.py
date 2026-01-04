@@ -1,18 +1,4 @@
-"""
-datasets.bdd100k_loader
-==========================================================
-BDD100K dataset loader and preprocessor for MEOCI framework.
-----------------------------------------------------------
-This module handles:
-    - Image and annotation loading
-    - Preprocessing (resize, normalization, augmentation)
-    - Dataset splitting (train/val/test)
-    - Multi-exit inference label generation
 
-References:
-    - BDD100K Dataset: https://bdd-data.berkeley.edu/
-    - Paper Section 5.2: "Experimental Settings"
-"""
 
 import os
 import cv2
@@ -25,10 +11,7 @@ from typing import Dict, Tuple, List, Any
 
 
 class BDD100KDataset(Dataset):
-    """
-    Custom dataset for BDD100K images and labels.
-    Supports both classification and detection-based multi-exit inference.
-    """
+
 
     def __init__(
         self,
@@ -66,9 +49,7 @@ class BDD100KDataset(Dataset):
         if self.cache:
             self._cache_dataset()
 
-    # ------------------------------------------------------------
-    # 🔧 Build transformation pipeline
-    # ------------------------------------------------------------
+
     def _build_transform_pipeline(self):
         if self.augmentation:
             transform = transforms.Compose([
@@ -90,13 +71,9 @@ class BDD100KDataset(Dataset):
             ])
         return transform
 
-    # ------------------------------------------------------------
-    # 🧠 Label processing for classification/detection
-    # ------------------------------------------------------------
+
     def _parse_label(self, ann: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Extract target labels (object category, confidence, etc.)
-        """
+
         if "labels" not in ann:
             return {"class_id": 0, "confidence": 1.0}
 
@@ -104,7 +81,6 @@ class BDD100KDataset(Dataset):
         if len(objects) == 0:
             return {"class_id": 0, "confidence": 1.0}
 
-        # Randomly select one object (for lightweight classification mode)
         obj = random.choice(objects)
         category = obj.get("category", "car")
         confidence = obj.get("score", 1.0)
@@ -123,17 +99,12 @@ class BDD100KDataset(Dataset):
         }
         return mapping.get(category.lower(), 8)  # others → 8
 
-    # ------------------------------------------------------------
-    # 🧩 Multi-exit supervision logic
-    # ------------------------------------------------------------
+
     def _generate_exit_targets(self, label: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Generate pseudo supervision signals for multi-exit classifiers.
-        """
+
         base_class = label["class_id"]
         conf = label["confidence"]
 
-        # Simulate varying exit confidence thresholds
         exits = {
             "exit1": (base_class, conf * 0.7),
             "exit2": (base_class, conf * 0.85),
@@ -141,9 +112,7 @@ class BDD100KDataset(Dataset):
         }
         return exits
 
-    # ------------------------------------------------------------
-    # 🖼️ Get sample
-    # ------------------------------------------------------------
+
     def __getitem__(self, idx: int):
         if self.cache and idx in self.cached_data:
             return self.cached_data[idx]
@@ -176,15 +145,11 @@ class BDD100KDataset(Dataset):
             self.cached_data[idx] = sample
         return sample
 
-    # ------------------------------------------------------------
-    # 🔢 Length
-    # ------------------------------------------------------------
+
     def __len__(self):
         return len(self.img_files)
 
-    # ------------------------------------------------------------
-    # ⚡ Dataset caching (optional)
-    # ------------------------------------------------------------
+
     def _cache_dataset(self):
         print(f"[BDD100K] Caching {len(self.img_files)} samples to memory...")
         for i in range(len(self.img_files)):
@@ -192,9 +157,7 @@ class BDD100KDataset(Dataset):
         print("[BDD100K] Cache complete.")
 
 
-# ------------------------------------------------------------
-# ✅ Utility: build dataloader
-# ------------------------------------------------------------
+
 def build_bdd100k_dataloader(
     root_dir: str,
     split: str = "train",
@@ -203,9 +166,7 @@ def build_bdd100k_dataloader(
     shuffle: bool = True,
     **kwargs
 ) -> DataLoader:
-    """
-    Build DataLoader for BDD100K dataset.
-    """
+
     dataset = BDD100KDataset(root_dir=root_dir, split=split, **kwargs)
     loader = DataLoader(
         dataset,
@@ -218,9 +179,7 @@ def build_bdd100k_dataloader(
     return loader
 
 
-# ------------------------------------------------------------
-# ✅ Example test
-# ------------------------------------------------------------
+
 if __name__ == "__main__":
     data_root = "/path/to/bdd100k"
     loader = build_bdd100k_dataloader(

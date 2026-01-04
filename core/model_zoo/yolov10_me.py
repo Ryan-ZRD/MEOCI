@@ -1,11 +1,10 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from .base_multi_exit import MultiExitBase
 
 
 class ConvBNAct(nn.Module):
-    """Standard Conv-BN-Activation block (used in YOLOv10 backbone)."""
+
     def __init__(self, in_channels, out_channels, k=3, s=1, p=1, act=True):
         super().__init__()
         self.conv = nn.Conv2d(in_channels, out_channels, k, s, p, bias=False)
@@ -17,7 +16,7 @@ class ConvBNAct(nn.Module):
 
 
 class Bottleneck(nn.Module):
-    """Basic bottleneck used in YOLOv10 backbone."""
+
     def __init__(self, in_channels, out_channels, shortcut=True):
         super().__init__()
         hidden = out_channels // 2
@@ -44,20 +43,7 @@ class DetectionHead(nn.Module):
 
 
 class MultiExitYOLOv10n(MultiExitBase):
-    """
-    MultiExitYOLOv10n (3 exits)
-    ==========================================================
-    Lightweight multi-exit variant of YOLOv10n
-    designed for edge–vehicle collaborative inference.
 
-    Exits:
-      - Exit 1: After C3 feature map (shallow)
-      - Exit 2: After C4 feature map (mid)
-      - Exit 3: After C5 feature map (deep, full detection head)
-
-    Reference:
-        Section 4.3, Fig. 6(d), Table II
-    """
 
     def __init__(self, num_classes: int = 10, num_anchors: int = 3):
         super(MultiExitYOLOv10n, self).__init__(
@@ -68,9 +54,7 @@ class MultiExitYOLOv10n(MultiExitBase):
         self.num_anchors = num_anchors
         self._build_model()
 
-    # ------------------------------------------------------------
-    # Build simplified YOLOv10n backbone with 3 exit heads
-    # ------------------------------------------------------------
+
     def _build_model(self):
         self.backbone = nn.ModuleList([
             nn.Sequential(  # Stem
@@ -88,11 +72,11 @@ class MultiExitYOLOv10n(MultiExitBase):
                 Bottleneck(256, 256),
                 Bottleneck(256, 256)
             ),  # C4
-            nn.Sequential(  # C5 feature
+            nn.Sequential(
                 ConvBNAct(256, 512, 3, 2, 1),
                 Bottleneck(512, 512),
                 Bottleneck(512, 512)
-            )   # C5
+            )
         ])
 
         # Early-exit detection heads
@@ -102,14 +86,9 @@ class MultiExitYOLOv10n(MultiExitBase):
             DetectionHead(512, num_classes=self.num_classes, num_anchors=self.num_anchors)   # Exit-3
         ])
 
-    # ------------------------------------------------------------
-    # Forward with early-exit control
-    # ------------------------------------------------------------
+
     def forward(self, x: torch.Tensor, exit_threshold: float = 0.85):
-        """
-        Forward pass with confidence-based early exit.
-        Each exit head predicts bounding boxes + classes.
-        """
+
         features = []
         for i, stage in enumerate(self.backbone):
             x = stage(x)
@@ -130,18 +109,13 @@ class MultiExitYOLOv10n(MultiExitBase):
         return outputs[-1], exit_id  # Final exit
 
     def _compute_confidence(self, pred: torch.Tensor) -> float:
-        """
-        Compute mean objectness confidence for early exit decision.
-        pred: [B, anchors*(num_classes+5), H, W]
-        """
+
         b, c, h, w = pred.shape
         pred = pred.view(b, self.num_anchors, self.num_classes + 5, h, w)
         obj = torch.sigmoid(pred[:, :, 4, :, :])  # objectness score
         return obj.mean().item()
 
-    # ------------------------------------------------------------
-    # Forward all exits (for evaluation)
-    # ------------------------------------------------------------
+
     def forward_all(self, x):
         features = []
         for i, stage in enumerate(self.backbone):
@@ -152,7 +126,7 @@ class MultiExitYOLOv10n(MultiExitBase):
         return outputs
 
 
-# ✅ Example test
+
 if __name__ == "__main__":
     model = MultiExitYOLOv10n(num_classes=10)
     x = torch.randn(1, 3, 256, 256)

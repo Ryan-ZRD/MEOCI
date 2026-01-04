@@ -21,9 +21,7 @@ import json
 import yaml
 from typing import Any, Dict, Union
 
-# ------------------------------------------------------------
-# 🔹 Utility Functions
-# ------------------------------------------------------------
+
 
 def load_yaml(path: str) -> Dict[str, Any]:
     """Load a YAML configuration file."""
@@ -149,9 +147,7 @@ class ConfigManager:
 
 
 
-# ------------------------------------------------------------
-# ✅ Example Usage
-# ------------------------------------------------------------
+
 if __name__ == "__main__":
     # Example: load multi-base config
     cfg = ConfigManager("configs/meoci_vgg16.yaml").config

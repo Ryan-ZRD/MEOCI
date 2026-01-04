@@ -1,12 +1,4 @@
-"""
-experiments.parameter_sensitivity
-----------------------------------------------------------
-Evaluate the sensitivity of MEOCI (ADP-D3QN) to hyperparameters:
-- Learning rate (lr)
-- Discount factor (gamma)
-- Replay buffer size
-Reproduces Fig.16 in the MEOCI paper (Sensitivity Analysis).
-"""
+
 
 import os
 import csv
@@ -22,9 +14,7 @@ from core.agent.agent_adp_d3qn import ADP_D3QNAgent
 from core.model_zoo.resnet50_me import MultiExitResNet50
 
 
-# ---------------------------------------------------------
-# Utility: Single experiment run
-# ---------------------------------------------------------
+
 def run_episode(agent, env, max_steps=200):
     """Run one episode in the environment and return total reward."""
     state = env.reset()
@@ -63,9 +53,7 @@ def evaluate_parameter(env, model, param_name, param_values, cfg, episodes=5):
     return results
 
 
-# ---------------------------------------------------------
-# Main function
-# ---------------------------------------------------------
+
 def parameter_sensitivity(cfg_path: str):
     """Run parameter sensitivity analysis."""
     cfg = ConfigManager(cfg_path).config

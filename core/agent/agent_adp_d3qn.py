@@ -12,18 +12,6 @@ from utils.logger import ExperimentLogger
 
 
 class ADP_D3QNAgent:
-    """
-    Adaptive Dual-Pool Dueling Double DQN (ADP-D3QN)
-    ---------------------------------------------------------
-    Implements the main training and inference logic described
-    in Section 3.5 of the MEOCI paper.
-
-    Key Features:
-    - Dual Experience Pools (E1 / E2)
-    - Adaptive ε-greedy exploration
-    - Double Dueling DQN target update
-    - Joint optimization for partition & early-exit
-    """
 
     def __init__(self,
                  state_dim: int,
@@ -201,7 +189,6 @@ class ADP_D3QNAgent:
         }
 
 
-# ✅ Quick Verification
 if __name__ == "__main__":
     import numpy as np
     from utils.logger import Logger

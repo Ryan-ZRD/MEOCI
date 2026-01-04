@@ -1,18 +1,6 @@
-"""
-experiments.ablation_study
-----------------------------------------------------------
-Perform ablation experiments to compare MEOCI agent variants:
-    - D3QN
-    - Adaptive D3QN (A-D3QN)
-    - DualPool D3QN (DP-D3QN)
-    - Adaptive DualPool D3QN (ADP-D3QN)
-Reproduces Fig.7 in the paper (Convergence curves).
-"""
-
 import os
 import csv
 import torch
-import numpy as np
 from tqdm import tqdm
 
 from configs import ConfigManager
@@ -26,7 +14,7 @@ from core.model_zoo.vgg16_me import MultiExitVGG16
 
 
 def train_agent_variant(agent, env, episodes, update_target_freq, logger, save_dir, label):
-    """Run training loop for one agent variant."""
+
     rewards = []
     best_reward = -float("inf")
 
@@ -57,7 +45,7 @@ def train_agent_variant(agent, env, episodes, update_target_freq, logger, save_d
 
 
 def run_ablation(cfg_path: str):
-    """Perform ablation experiments for different agent variants."""
+
     cfg = ConfigManager(cfg_path).config
     set_global_seed(cfg["training"]["seed"])
     device = torch.device(cfg["training"].get("device", "cuda" if torch.cuda.is_available() else "cpu"))

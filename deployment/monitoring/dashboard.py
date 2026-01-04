@@ -1,43 +1,23 @@
-"""
-dashboard.py
-------------------------------------------------------------
-A lightweight real-time monitoring dashboard for the MEOCI system.
-
-Features:
-- Displays system metrics (CPU, GPU, memory, bandwidth)
-- Visualizes latency, energy, and throughput in real-time
-- Aggregates data from local sensors or InfluxDB time-series
-------------------------------------------------------------
-Run:
-    python deployment/monitoring/dashboard.py
-Then open http://localhost:8080 in your browser.
-------------------------------------------------------------
-"""
-
 from flask import Flask, render_template_string, jsonify
 import psutil
 import time
 import threading
 import random
 
-# Optional InfluxDB connection (if used)
+
 try:
     from influxdb import InfluxDBClient
     influx_enabled = True
 except ImportError:
     influx_enabled = False
 
-# ------------------------------------------------------------
-# Configuration
-# ------------------------------------------------------------
+
 REFRESH_INTERVAL = 2.0  # seconds
 INFLUX_HOST = "localhost"
 INFLUX_PORT = 8086
 INFLUX_DB = "meoci_metrics"
 
-# ------------------------------------------------------------
-# Flask Application
-# ------------------------------------------------------------
+
 app = Flask(__name__)
 metrics_data = {
     "cpu_usage": 0,
@@ -49,9 +29,7 @@ metrics_data = {
     "throughput": 0
 }
 
-# ------------------------------------------------------------
-# Background metrics collector
-# ------------------------------------------------------------
+
 def collect_metrics():
     """Continuously update metrics_data with system information."""
     while True:
@@ -101,9 +79,7 @@ def collect_metrics():
         time.sleep(REFRESH_INTERVAL)
 
 
-# ------------------------------------------------------------
-# Flask Routes
-# ------------------------------------------------------------
+
 @app.route("/")
 def index():
     return render_template_string(
@@ -162,9 +138,7 @@ def get_metrics():
     return jsonify(metrics_data)
 
 
-# ------------------------------------------------------------
-# Main entry
-# ------------------------------------------------------------
+
 if __name__ == "__main__":
     print("Starting MEOCI Dashboard at http://localhost:8080")
     threading.Thread(target=collect_metrics, daemon=True).start()

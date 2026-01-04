@@ -1,23 +1,3 @@
-"""
-influx_client.py
-------------------------------------------------------------
-Unified InfluxDB client wrapper for MEOCI system monitoring
-and experiment metric recording.
-
-Features:
-- Automatically handles both InfluxDB v1.x and v2.x APIs
-- Simplified write/query interface for system metrics
-- Supports asynchronous write buffering for performance
-------------------------------------------------------------
-Usage Example:
-    from deployment.monitoring.influx_client import InfluxManager
-
-    influx = InfluxManager(host="localhost", port=8086, db_name="meoci_metrics")
-    influx.write_metric("training", {"reward": 123, "loss": 0.02})
-    data = influx.query("SELECT * FROM training LIMIT 5")
-------------------------------------------------------------
-"""
-
 import os
 import time
 import logging
@@ -34,7 +14,7 @@ except ImportError:
 
 
 class InfluxManager:
-    """Unified InfluxDB management class for experiment and monitoring data."""
+
 
     def __init__(self,
                  host: str = "localhost",
@@ -47,22 +27,7 @@ class InfluxManager:
                  bucket: str = None,
                  token: str = None,
                  async_write: bool = False):
-        """
-        Initialize connection to InfluxDB.
-        Supports both v1.x and v2.x connections.
 
-        Args:
-            host: InfluxDB server host
-            port: InfluxDB port
-            username: username for authentication
-            password: password for authentication
-            db_name: database (v1) or bucket (v2)
-            version: 'v1' or 'v2'
-            org: organization name (v2 only)
-            bucket: target bucket (v2 only)
-            token: API token (v2 only)
-            async_write: enable background writing thread
-        """
         self.version = version
         self.db_name = db_name
         self.org = org or "default-org"
@@ -101,9 +66,6 @@ class InfluxManager:
         if async_write:
             threading.Thread(target=self._background_writer, daemon=True).start()
 
-    # ------------------------------------------------------------
-    # Core Write Methods
-    # ------------------------------------------------------------
     def write_metric(self, measurement: str, fields: dict, tags: dict = None):
         """Write a single metric record to InfluxDB."""
         if not self.client:
@@ -140,9 +102,7 @@ class InfluxManager:
             tags = entry.get("tags", {})
             self.write_metric(measurement, fields, tags)
 
-    # ------------------------------------------------------------
-    # Background Writer (for async mode)
-    # ------------------------------------------------------------
+
     def _background_writer(self):
         """Continuously flush write queue to database."""
         while not self._stop_event.is_set():
@@ -160,9 +120,7 @@ class InfluxManager:
                     logging.error(f"[Influx] Async flush error: {e}")
             time.sleep(2.0)
 
-    # ------------------------------------------------------------
-    # Query and Read
-    # ------------------------------------------------------------
+
     def query(self, query: str):
         """Query records from InfluxDB (v1 syntax)."""
         if not self.client:
@@ -182,9 +140,7 @@ class InfluxManager:
             logging.error(f"[Influx] Query failed: {e}")
             return []
 
-    # ------------------------------------------------------------
-    # Connection Management
-    # ------------------------------------------------------------
+
     def close(self):
         """Clean shutdown for async writer."""
         self._stop_event.set()
@@ -196,9 +152,7 @@ class InfluxManager:
                 logging.warning(f"[Influx] Close error: {e}")
 
 
-# ------------------------------------------------------------
-# Standalone Test
-# ------------------------------------------------------------
+
 if __name__ == "__main__":
     influx = InfluxManager(host="localhost", port=8086, db_name="meoci_test", version="v1")
     influx.write_metric("system_status", {"cpu": 43.2, "mem": 71.8, "latency": 112})

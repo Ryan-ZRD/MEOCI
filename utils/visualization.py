@@ -1,16 +1,4 @@
-"""
-utils.visualization
-==========================================================
-Quick visualization utilities for MEOCI framework.
-----------------------------------------------------------
-Provides:
-    - Training convergence plotting (reward curves)
-    - Latency/Energy/Accuracy trend plots
-    - Multi-agent or baseline comparison
-Used for:
-    - Experiment debugging
-    - Sanity checks before official plotting
-"""
+
 
 import os
 import csv
@@ -20,9 +8,7 @@ import matplotlib.pyplot as plt
 from typing import List, Dict, Optional
 
 
-# ------------------------------------------------------------
-# 🎯 1. Basic Plot Settings
-# ------------------------------------------------------------
+
 plt.rcParams.update({
     "font.size": 12,
     "font.family": "serif",
@@ -40,24 +26,13 @@ def ensure_dir(path: str):
         os.makedirs(path)
 
 
-# ------------------------------------------------------------
-# 📈 2. Plot Training Curve
-# ------------------------------------------------------------
 def plot_reward_curve(
     csv_file: str,
     out_path: Optional[str] = None,
     title: str = "Training Convergence (ADP-D3QN)",
     smooth: int = 10
 ):
-    """
-    Plot convergence curve of reward vs episodes.
 
-    Args:
-        csv_file: Path to metrics_log.csv
-        out_path: Save path for figure
-        title: Title of the plot
-        smooth: Moving average window
-    """
     steps, rewards = [], []
     with open(csv_file, "r") as f:
         reader = csv.DictReader(f)
@@ -93,9 +68,7 @@ def plot_reward_curve(
         plt.show()
 
 
-# ------------------------------------------------------------
-# ⚡ 3. Plot Metric Comparison
-# ------------------------------------------------------------
+
 def plot_metric_comparison(
     data: Dict[str, List[float]],
     xlabel: str = "Scenario Index",
@@ -104,9 +77,7 @@ def plot_metric_comparison(
     labels: Optional[List[str]] = None,
     out_path: Optional[str] = None
 ):
-    """
-    Plot line comparison of multiple methods (e.g., ablation or baselines).
-    """
+
     plt.figure()
     n = len(data)
     cmap = plt.get_cmap("tab10")
@@ -129,9 +100,7 @@ def plot_metric_comparison(
         plt.show()
 
 
-# ------------------------------------------------------------
-# 🔋 4. Latency vs Energy Trade-off
-# ------------------------------------------------------------
+
 def plot_latency_energy_tradeoff(
     latencies: List[float],
     energies: List[float],
@@ -139,9 +108,7 @@ def plot_latency_energy_tradeoff(
     title: str = "Latency-Energy Trade-off",
     out_path: Optional[str] = None
 ):
-    """
-    Plot tradeoff curve for latency and energy (Pareto frontier visualization).
-    """
+
     plt.figure()
     plt.scatter(latencies, energies, c="tab:blue", alpha=0.7, label="Samples")
 
@@ -174,18 +141,14 @@ def plot_latency_energy_tradeoff(
         plt.show()
 
 
-# ------------------------------------------------------------
-# 📊 5. Accuracy vs Delay Constraint
-# ------------------------------------------------------------
+
 def plot_accuracy_vs_delay(
     delays: List[float],
     accuracies: List[float],
     label: str = "ADP-D3QN",
     out_path: Optional[str] = None
 ):
-    """
-    Plot accuracy under different delay constraints (Fig.12 equivalent).
-    """
+
     plt.figure()
     plt.plot(delays, accuracies, marker="s", color="tab:green", label=label)
     plt.xlabel("Delay Constraint (ms)")
@@ -202,9 +165,7 @@ def plot_accuracy_vs_delay(
         plt.show()
 
 
-# ------------------------------------------------------------
-# ✅ Example Usage
-# ------------------------------------------------------------
+
 if __name__ == "__main__":
     # 1. Reward convergence example
     plot_reward_curve(

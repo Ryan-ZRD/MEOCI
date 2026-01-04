@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Tuple, List
+
 
 
 class MobilityModel:
@@ -45,10 +45,7 @@ class MobilityModel:
     # Update mobility state
     # ----------------------------------------------------------
     def step(self):
-        """
-        Perform one mobility update using Gaussian–Markov process:
-        v(t+1) = α*v(t) + (1−α)*v̄ + sqrt(1−α²)*σ*N(0,1)
-        """
+
         mean_speed = self.max_speed / 2.0
         noise = self.random_state.normal(0, 1)
         new_speed = self.alpha * self.speed + (1 - self.alpha) * mean_speed + np.sqrt(1 - self.alpha ** 2) * self.sigma_v * noise
@@ -123,7 +120,7 @@ class MobilityModel:
         }
 
 
-# ✅ Example quick test
+
 if __name__ == "__main__":
     model = MobilityModel(init_speed=20.0, max_speed=35.0)
     for t in range(10):

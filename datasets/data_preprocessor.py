@@ -1,19 +1,4 @@
-"""
-datasets.data_preprocessor
-==========================================================
-Unified data preprocessing and caching utilities for MEOCI.
-----------------------------------------------------------
-Handles:
-    - Dataset normalization and resizing
-    - Balanced / random sampling
-    - Caching preprocessed samples to accelerate training
-    - Integration with BDD100K and other datasets
 
-Used in:
-    - ADP-D3QN training (input normalization)
-    - Vehicle-edge inference simulation (task input sampling)
-    - Ablation studies (Fig. 10–12)
-"""
 
 import os
 import cv2
@@ -26,17 +11,6 @@ from torch.utils.data import Subset
 
 
 class DataPreprocessor:
-    """
-    DataPreprocessor
-    ======================================================
-    Provides unified preprocessing and sampling for datasets.
-
-    Features:
-        ✅ Resize, normalize, and augment
-        ✅ In-memory or disk-based caching
-        ✅ Balanced or random sampling
-        ✅ Compatible with PyTorch Datasets
-    """
 
     def __init__(
         self,
@@ -56,9 +30,6 @@ class DataPreprocessor:
         if mode == "disk" and not os.path.exists(cache_dir):
             os.makedirs(cache_dir, exist_ok=True)
 
-    # ------------------------------------------------------------
-    # 🔧 Transform pipeline
-    # ------------------------------------------------------------
     def _build_transform_pipeline(self):
         if self.normalize:
             return transforms.Compose([
@@ -73,13 +44,8 @@ class DataPreprocessor:
                 transforms.Resize(self.image_size)
             ])
 
-    # ------------------------------------------------------------
-    # ⚙️ Preprocess a single sample
-    # ------------------------------------------------------------
     def preprocess_sample(self, img_path: str) -> np.ndarray:
-        """
-        Preprocess a single image: resize, normalize, and convert.
-        """
+
         img = cv2.imread(img_path)
         if img is None:
             raise FileNotFoundError(f"Image not found: {img_path}")
@@ -88,13 +54,9 @@ class DataPreprocessor:
         img_tensor = self.transform(img_resized)
         return img_tensor
 
-    # ------------------------------------------------------------
-    # 💾 Cache entire dataset (optional)
-    # ------------------------------------------------------------
+
     def cache_dataset(self, dataset, cache_name: str = "bdd100k_train_cache.pkl"):
-        """
-        Cache dataset to memory or disk for faster loading.
-        """
+
         print(f"[Preprocessor] Caching dataset ({len(dataset)}) samples...")
 
         cache_path = os.path.join(self.cache_dir, cache_name)
@@ -116,9 +78,7 @@ class DataPreprocessor:
         else:
             print("[Preprocessor] Caching disabled.")
 
-    # ------------------------------------------------------------
-    # 🔍 Load cache from disk
-    # ------------------------------------------------------------
+
     def load_cache(self, cache_name: str = "bdd100k_train_cache.pkl") -> Dict[int, Any]:
         cache_path = os.path.join(self.cache_dir, cache_name)
         if not os.path.exists(cache_path):
@@ -129,13 +89,8 @@ class DataPreprocessor:
         print(f"[Preprocessor] Loaded {len(data)} samples from cache.")
         return data
 
-    # ------------------------------------------------------------
-    # 🎯 Balanced sampling by class
-    # ------------------------------------------------------------
     def build_balanced_subset(self, dataset, num_per_class: int = 100) -> Subset:
-        """
-        Construct a balanced subset of the dataset.
-        """
+
         label_to_indices: Dict[int, List[int]] = {}
         for i in range(len(dataset)):
             label = dataset[i]["target"] if "target" in dataset[i] else dataset[i]["targets"]["exit3"][0]
@@ -147,24 +102,18 @@ class DataPreprocessor:
         print(f"[Preprocessor] Built balanced subset with {len(selected_indices)} samples.")
         return Subset(dataset, selected_indices)
 
-    # ------------------------------------------------------------
-    # ⚡ Random sampling
-    # ------------------------------------------------------------
+
     def random_sample(self, dataset, n: int = 200) -> Subset:
         indices = np.random.choice(len(dataset), n, replace=False)
         return Subset(dataset, indices)
 
-    # ------------------------------------------------------------
-    # 🧹 Reset cache
-    # ------------------------------------------------------------
+
     def reset_cache(self):
         self.cached_data.clear()
         print("[Preprocessor] Cache cleared.")
 
 
-# ------------------------------------------------------------
-# ✅ Example Usage
-# ------------------------------------------------------------
+
 if __name__ == "__main__":
     from datasets.bdd100k_loader import BDD100KDataset
 

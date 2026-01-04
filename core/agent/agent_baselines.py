@@ -38,7 +38,7 @@ class BaseAgent:
 
 
 # ============================================================
-# 1️⃣ D3QN Baseline (Vanilla)
+#  D3QN Baseline (Vanilla)
 # ============================================================
 class D3QNAgent(BaseAgent):
     """
@@ -106,7 +106,7 @@ class D3QNAgent(BaseAgent):
 
 
 # ============================================================
-# 2️⃣ A-D3QN Baseline (with Adaptive ε)
+#  A-D3QN Baseline (with Adaptive ε)
 # ============================================================
 class AD3QNAgent(BaseAgent):
     """
@@ -172,7 +172,7 @@ class AD3QNAgent(BaseAgent):
 
 
 # ============================================================
-# 3️⃣ DP-D3QN Baseline (Dual Replay Buffer)
+# ADP-D3QN Baseline (Dual Replay Buffer)
 # ============================================================
 class DP_D3QNAgent(BaseAgent):
     """
@@ -222,7 +222,7 @@ class DP_D3QNAgent(BaseAgent):
         return loss.item(), float(rewards.mean().item())
 
 
-# ✅ Quick test
+
 if __name__ == "__main__":
     state_dim, action_dim = 4, 8
     agents = {

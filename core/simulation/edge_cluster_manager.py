@@ -5,28 +5,7 @@ from core.environment.network_channel import NetworkChannel
 
 
 class EdgeClusterManager:
-    """
-    EdgeClusterManager
-    ==========================================================
-    Simulation manager for edge RSU clusters in MEOCI framework.
 
-    Responsibilities:
-        - Manage a set of EdgeServers (RSUs)
-        - Handle task migration / balancing among RSUs
-        - Model inter-RSU communication latency
-        - Support adaptive resource allocation and bandwidth sharing
-
-    Key Features:
-        ✅ Dynamic load balancing among RSUs
-        ✅ Adaptive inter-edge transmission latency
-        ✅ Distributed decision support for MEOCI algorithm
-        ✅ Compatible with ADP-D3QN environment simulation
-
-    Paper Reference:
-        - Section 4.3 "Collaborative Edge Architecture"
-        - Fig. 16 "System Scalability Analysis"
-        - Table IV "Cluster Parameters"
-    """
 
     def __init__(
         self,
@@ -53,14 +32,7 @@ class EdgeClusterManager:
         self.migration_cost = migration_cost
         self.history = []
 
-    # ------------------------------------------------------------
-    # ✅ Task distribution logic (load-aware balancing)
-    # ------------------------------------------------------------
     def distribute_task(self, source_edge: int, task_size_mb: float) -> int:
-        """
-        Assign or migrate a task from a source edge to the most suitable target.
-        Returns the target edge index.
-        """
         source = self.edges[source_edge]
         target = self._select_target_edge(source_edge)
         if target == source_edge:
@@ -77,34 +49,18 @@ class EdgeClusterManager:
             self._log_event(source_edge, target, task_size_mb, total_delay, "migrated")
             return target
 
-    # ------------------------------------------------------------
-    # 🔍 Target selection based on queue load
-    # ------------------------------------------------------------
     def _select_target_edge(self, src: int) -> int:
-        """
-        Choose target edge server with minimal current load.
-        Returns index of best edge (could be same as source).
-        """
         loads = [e.current_load for e in self.edges]
         best_edge = int(np.argmin(loads))
         return best_edge if best_edge != src else src
 
-    # ------------------------------------------------------------
-    # 🕓 Inter-RSU latency computation
-    # ------------------------------------------------------------
     def _compute_inter_rsu_delay(self, channel: NetworkChannel, task_size_mb: float) -> float:
-        """
-        Compute transmission delay between RSUs over inter-RSU channel.
-        """
         channel.update_fading_state()
         base_delay = self.inter_rsu_latency_base
         tx_delay = channel.compute_transmission_delay(task_size_mb)
         noise_factor = np.random.uniform(0.9, 1.1)
         return (base_delay + tx_delay) * noise_factor
 
-    # ------------------------------------------------------------
-    # 📈 Collect statistics for cluster performance
-    # ------------------------------------------------------------
     def collect_statistics(self) -> Dict[str, float]:
         total_loads = [e.current_load for e in self.edges]
         avg_load = np.mean(total_loads)
@@ -118,9 +74,6 @@ class EdgeClusterManager:
             "migration_ratio": round(migration_ratio, 3),
         }
 
-    # ------------------------------------------------------------
-    # 🧹 Reset state (used for multiple episodes)
-    # ------------------------------------------------------------
     def reset(self):
         for e in self.edges:
             e.reset()
@@ -128,9 +81,6 @@ class EdgeClusterManager:
             ch.reset()
         self.history.clear()
 
-    # ------------------------------------------------------------
-    # 🧾 Logging utility
-    # ------------------------------------------------------------
     def _log_event(self, src: int, tgt: int, size: float, delay: float, event_type: str):
         self.history.append({
             "src": src,
@@ -140,9 +90,6 @@ class EdgeClusterManager:
             "type": event_type,
         })
 
-    # ------------------------------------------------------------
-    # 📤 Export event trace (for plotting Fig. 16)
-    # ------------------------------------------------------------
     def export_log(self, filepath: str):
         import csv
         keys = ["src", "tgt", "size(MB)", "delay(ms)", "type"]
@@ -153,7 +100,7 @@ class EdgeClusterManager:
                 writer.writerow(entry)
 
 
-# ✅ Example test
+
 if __name__ == "__main__":
     cluster = EdgeClusterManager(num_edges=3)
     for _ in range(20):

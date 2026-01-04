@@ -12,21 +12,6 @@ from utils.logger import ExperimentLogger
 
 
 class VehicularEdgeEnv:
-    """
-    Vehicular Edge Computing (VEC) Environment
-    ----------------------------------------------------------
-    Core environment used to train and evaluate the ADP-D3QN agent.
-
-    State space:
-        s_t = [accuracy_t, queue_length_t, edge_resource_t, task_rate_t]
-
-    Action space:
-        a_t = (partition_point ∈ [0, L], exit_point ∈ [1, E])
-
-    Reward:
-        r_t = - (w_d * latency + w_e * energy - w_a * accuracy)
-        (Implemented in reward_function.py)
-    """
 
     def __init__(self,
                  model_layers: int = 10,
@@ -169,7 +154,7 @@ class VehicularEdgeEnv:
         }
 
 
-# ✅ Quick test
+
 if __name__ == "__main__":
     from utils.logger import Logger
     env = VehicularEdgeEnv(logger=Logger(), num_vehicles=5)

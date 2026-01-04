@@ -5,27 +5,10 @@ from typing import List, Dict, Tuple
 
 
 class MultiExitBase(nn.Module):
-    """
-    MultiExitBase
-    ==========================================================
-    Base class for multi-exit deep neural networks (DNNs).
 
-    Provides:
-      • Multiple intermediate exits for early inference termination
-      • Forward propagation with dynamic exit decisions
-      • Per-exit accuracy / latency estimation interfaces
-
-    Paper Reference:
-        Section 4.2 – "Multi-Exit Neural Network Design"
-    """
 
     def __init__(self, num_exits: int, exit_layers: List[int], num_classes: int):
-        """
-        Args:
-            num_exits: Number of early-exit branches.
-            exit_layers: List of layer indices where exits are attached.
-            num_classes: Number of classification categories.
-        """
+
         super(MultiExitBase, self).__init__()
 
         assert num_exits == len(exit_layers), \
@@ -38,24 +21,14 @@ class MultiExitBase(nn.Module):
         self.feature_layers = nn.ModuleList()  # main trunk
         self._build_model()
 
-    # ------------------------------------------------------------
-    # Model architecture placeholder
-    # ------------------------------------------------------------
+
     def _build_model(self):
-        """
-        Define network backbone and exits.
-        This should be overridden by subclasses.
-        Example: AlexNetME / VGG16ME / ResNet50ME
-        """
+
         raise NotImplementedError("Subclasses must implement _build_model().")
 
-    # ------------------------------------------------------------
-    # Attach exit heads dynamically
-    # ------------------------------------------------------------
+
     def _add_exit(self, in_channels: int, feature_dim: int = 256):
-        """
-        Add an early-exit classification head.
-        """
+
         exit_branch = nn.Sequential(
             nn.AdaptiveAvgPool2d((1, 1)),
             nn.Flatten(),
@@ -65,21 +38,9 @@ class MultiExitBase(nn.Module):
         )
         self.exits.append(exit_branch)
 
-    # ------------------------------------------------------------
-    # Forward with dynamic early-exit decision
-    # ------------------------------------------------------------
+
     def forward(self, x: torch.Tensor, exit_threshold: float = 0.9) -> Tuple[torch.Tensor, int]:
-        """
-        Forward pass with optional early-exit behavior.
 
-        Args:
-            x: Input tensor.
-            exit_threshold: Confidence threshold for early exit.
-
-        Returns:
-            output: Final or early-exit logits.
-            exit_id: Index of the exit point used.
-        """
         outputs = []
         exit_id = self.num_exits - 1  # default: last exit
 
@@ -103,9 +64,7 @@ class MultiExitBase(nn.Module):
         outputs.append(final_logits)
         return final_logits, exit_id
 
-    # ------------------------------------------------------------
-    # Forward all exits (for training / analysis)
-    # ------------------------------------------------------------
+
     def forward_all(self, x: torch.Tensor) -> List[torch.Tensor]:
         """
         Compute logits from all exit points (used for multi-exit training).
@@ -118,18 +77,13 @@ class MultiExitBase(nn.Module):
                 outputs.append(self.exits[idx](x))
         return outputs
 
-    # ------------------------------------------------------------
-    # Compute multi-exit losses
-    # ------------------------------------------------------------
+
     def compute_losses(self,
                        outputs: List[torch.Tensor],
                        targets: torch.Tensor,
                        loss_fn=nn.CrossEntropyLoss(),
                        loss_weights: List[float] = None) -> torch.Tensor:
-        """
-        Weighted multi-exit loss (Eq. 17 in paper):
-            L_total = Σ_i λ_i * L_i
-        """
+
         if loss_weights is None:
             loss_weights = [1.0 / len(outputs)] * len(outputs)
 
@@ -137,9 +91,7 @@ class MultiExitBase(nn.Module):
         total_loss = torch.stack(losses).sum()
         return total_loss
 
-    # ------------------------------------------------------------
-    # Exit performance summary (accuracy / confidence)
-    # ------------------------------------------------------------
+
     def evaluate_exits(self, x: torch.Tensor, y: torch.Tensor) -> Dict[int, float]:
         """
         Evaluate per-exit accuracy (for analysis/plotting).
@@ -154,9 +106,7 @@ class MultiExitBase(nn.Module):
                 results[idx + 1] = round(acc, 4)
         return results
 
-    # ------------------------------------------------------------
-    # Count parameters and FLOPs
-    # ------------------------------------------------------------
+
     def count_parameters(self) -> int:
         """Return total number of trainable parameters."""
         return sum(p.numel() for p in self.parameters() if p.requires_grad)
@@ -170,7 +120,7 @@ class MultiExitBase(nn.Module):
         print(f"Output Classes: {self.num_classes}")
 
 
-# ✅ Example subclass template
+
 if __name__ == "__main__":
     class DummyNet(MultiExitBase):
         def _build_model(self):

@@ -1,18 +1,4 @@
-"""
-utils.seed_utils
-==========================================================
-Global random seed control utilities for MEOCI framework.
-----------------------------------------------------------
-Ensures reproducibility across:
-    - PyTorch
-    - NumPy
-    - Python random
-    - CUDA and cuDNN
-Used in:
-    - core/agent/*
-    - experiments/*
-    - datasets/*
-"""
+
 
 import os
 import random
@@ -20,17 +6,9 @@ import numpy as np
 import torch
 
 
-# ------------------------------------------------------------
-# 🎯 Set Global Seed
-# ------------------------------------------------------------
-def set_global_seed(seed: int = 42, deterministic: bool = True) -> None:
-    """
-    Set random seeds for reproducibility across all major libs.
 
-    Args:
-        seed (int): Seed value.
-        deterministic (bool): Enforce deterministic cuDNN mode (slower but consistent).
-    """
+def set_global_seed(seed: int = 42, deterministic: bool = True) -> None:
+
     os.environ["PYTHONHASHSEED"] = str(seed)
     random.seed(seed)
     np.random.seed(seed)
@@ -47,9 +25,7 @@ def set_global_seed(seed: int = 42, deterministic: bool = True) -> None:
     print(f"[SeedUtils] Global random seed set to {seed} (deterministic={deterministic})")
 
 
-# ------------------------------------------------------------
-# 🧩 Utility: Seed Context Manager
-# ------------------------------------------------------------
+
 class temp_seed:
     """
     Temporarily override global random seed within context.
@@ -86,25 +62,14 @@ class temp_seed:
 # 🔄 Utility: Generate Seed List
 # ------------------------------------------------------------
 def generate_seed_list(base_seed: int, n: int) -> list:
-    """
-    Generate a sequence of reproducible seeds for multi-agent or multi-experiment setups.
 
-    Args:
-        base_seed (int): Starting seed value.
-        n (int): Number of seeds to generate.
-
-    Returns:
-        list[int]: list of seeds.
-    """
     random.seed(base_seed)
     seeds = [random.randint(0, 99999) for _ in range(n)]
     print(f"[SeedUtils] Generated {n} seeds from base={base_seed}")
     return seeds
 
 
-# ------------------------------------------------------------
-# ✅ Example Usage
-# ------------------------------------------------------------
+
 if __name__ == "__main__":
     set_global_seed(2025)
 

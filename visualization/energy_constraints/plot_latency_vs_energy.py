@@ -1,13 +1,3 @@
-"""
-visualization.energy_constraints.plot_latency_vs_energy
--------------------------------------------------------
-Reproduces Fig.14(a): Average Inference Latency vs Energy Constraint
-
-Description:
-    Visualizes how different maximum energy budgets affect average
-    inference latency (ms) under various collaborative inference strategies.
-"""
-
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -20,22 +10,10 @@ def plot_latency_vs_energy(
     save_path: str = "results/plots/fig14a_latency_vs_energy.png",
     smooth_alpha: float = 0.3
 ):
-    """
-    Plot average inference latency (ms) under different energy constraints (mJ).
 
-    Args:
-        csv_path (str): Path to the CSV file containing data.
-        save_path (str): Path to save the resulting figure.
-        smooth_alpha (float): Smoothing factor for exponential smoothing.
-    """
-    # ------------------------------------------------------------
-    # 1. Style setup
-    # ------------------------------------------------------------
     set_global_plot_style()
 
-    # ------------------------------------------------------------
-    # 2. Load data
-    # ------------------------------------------------------------
+
     if not os.path.exists(csv_path):
         raise FileNotFoundError(f"Dataset not found: {csv_path}")
 
@@ -46,9 +24,7 @@ def plot_latency_vs_energy(
     x = df["Energy Constraint (mJ)"].values
     methods = [c for c in df.columns if c != "Energy Constraint (mJ)"]
 
-    # ------------------------------------------------------------
-    # 3. Define color/style map
-    # ------------------------------------------------------------
+
     color_map = {
         "Vehicle-Only": "#8c564b",
         "Edge-Only": "#7f7f7f",
@@ -67,9 +43,7 @@ def plot_latency_vs_energy(
         "ADP-D3QN (Ours)": "-",
     }
 
-    # ------------------------------------------------------------
-    # 4. Plot curves
-    # ------------------------------------------------------------
+
     plt.figure(figsize=(7.2, 5))
     for method in methods:
         y_raw = df[method].values
@@ -85,9 +59,7 @@ def plot_latency_vs_energy(
             markersize=5
         )
 
-    # ------------------------------------------------------------
-    # 5. Formatting
-    # ------------------------------------------------------------
+
     plt.xlabel("Maximum Energy Constraint (mJ)")
     plt.ylabel("Average Inference Latency (ms)")
     plt.title("Average Latency vs Energy Constraint")
@@ -96,9 +68,7 @@ def plot_latency_vs_energy(
     plt.ylim(50, 100)
     plt.tight_layout()
 
-    # ------------------------------------------------------------
-    # 6. Save figure
-    # ------------------------------------------------------------
+
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     plt.savefig(save_path, dpi=400)
     plt.close()

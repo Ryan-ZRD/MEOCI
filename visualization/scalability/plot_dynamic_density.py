@@ -1,18 +1,4 @@
-"""
-visualization.scalability.plot_dynamic_density
-----------------------------------------------------------
-Reproduces Fig.14 of the MEOCI paper.
 
-Plots the effect of dynamic vehicle density on:
-    - Average Inference Latency (ms)
-    - Average Reward
-
-Input:
-    results/csv/scalability.csv
-
-Columns Example:
-    VehicleDensity,Latency_MEOCI,Latency_Edgent,Latency_FedAdapt,Reward_MEOCI,Reward_Edgent,Reward_FedAdapt
-"""
 
 import os
 import pandas as pd

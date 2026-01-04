@@ -1,10 +1,4 @@
-"""
-experiments.distributed_training
-----------------------------------------------------------
-Simulate distributed ADP-D3QN training across multiple RSU and vehicle nodes.
-Reproduces distributed learning efficiency and convergence experiments
-(Fig.13–Fig.15 in the MEOCI paper).
-"""
+
 
 import os
 import time
@@ -23,9 +17,7 @@ from core.agent.agent_adp_d3qn import ADP_D3QNAgent
 from core.model_zoo.resnet50_me import MultiExitResNet50
 
 
-# ---------------------------------------------------------
-# Node simulation
-# ---------------------------------------------------------
+
 class DistributedNode:
     """A simulated RSU or vehicle node participating in distributed training."""
 
@@ -61,9 +53,7 @@ class DistributedNode:
         self.agent.q_network.load_state_dict(new_params, strict=True)
 
 
-# ---------------------------------------------------------
-# Parameter Aggregation
-# ---------------------------------------------------------
+
 def aggregate_parameters(node_params_list):
     """Federated averaging (FedAvg) for distributed agents."""
     aggregated = copy.deepcopy(node_params_list[0])
@@ -74,9 +64,6 @@ def aggregate_parameters(node_params_list):
     return aggregated
 
 
-# ---------------------------------------------------------
-# Distributed Training Simulation
-# ---------------------------------------------------------
 def distributed_training(cfg_path: str):
     """Simulate distributed ADP-D3QN training with multiple nodes."""
     cfg = ConfigManager(cfg_path).config

@@ -1,22 +1,11 @@
-"""
-visualization.transmission_effect.transmission_plot_utils
-----------------------------------------------------------
-Helper utilities for plotting transmission-rate experiments (Fig.12).
 
-Provides:
-    - Standardized color/style mapping across methods.
-    - Smoothing of experimental curves (Savitzky-Golay).
-    - Utility functions for consistent legend & axis formatting.
-"""
 
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
 
 
-# ------------------------------------------------------------
-# 1. Color and Style Dictionary
-# ------------------------------------------------------------
+
 METHOD_COLORS = {
     "Vehicle-Only": "#8c564b",
     "Edge-Only": "#7f7f7f",
@@ -45,21 +34,8 @@ METHOD_MARKERS = {
 }
 
 
-# ------------------------------------------------------------
-# 2. Curve Smoothing (Savitzky-Golay)
-# ------------------------------------------------------------
+
 def smooth_curve(y, window=3, poly=1):
-    """
-    Smooth a curve using the Savitzky-Golay filter.
-
-    Args:
-        y (array-like): Input data series.
-        window (int): Window length for smoothing (odd number).
-        poly (int): Polynomial order for smoothing.
-
-    Returns:
-        np.ndarray: Smoothed curve.
-    """
     if len(y) < window:
         return np.array(y)
     if window % 2 == 0:
@@ -67,20 +43,8 @@ def smooth_curve(y, window=3, poly=1):
     return savgol_filter(y, window_length=window, polyorder=poly)
 
 
-# ------------------------------------------------------------
-# 3. Plot Formatting Utilities
-# ------------------------------------------------------------
-def apply_plot_style(ax, xlabel, ylabel, title=None, grid=True):
-    """
-    Apply standard axis labels and optional title/grid.
 
-    Args:
-        ax (matplotlib.axes.Axes): Target axes object.
-        xlabel (str): Label for x-axis.
-        ylabel (str): Label for y-axis.
-        title (str): Optional title.
-        grid (bool): Whether to show grid lines.
-    """
+def apply_plot_style(ax, xlabel, ylabel, title=None, grid=True):
     ax.set_xlabel(xlabel, fontsize=11)
     ax.set_ylabel(ylabel, fontsize=11)
     if title:
@@ -90,16 +54,6 @@ def apply_plot_style(ax, xlabel, ylabel, title=None, grid=True):
 
 
 def draw_transmission_curves(ax, x, df, ylabel, smooth=False):
-    """
-    Draw curves for multiple methods with consistent formatting.
-
-    Args:
-        ax (Axes): Target Matplotlib axes.
-        x (array): Transmission rate array (Mbps).
-        df (pd.DataFrame): DataFrame containing columns for each method.
-        ylabel (str): y-axis label (e.g., 'Latency (ms)', 'Completion Rate (%)').
-        smooth (bool): Whether to apply curve smoothing.
-    """
     methods = [c for c in df.columns if "Rate" not in c]
     for method in methods:
         y = df[method].values
@@ -122,9 +76,6 @@ def draw_transmission_curves(ax, x, df, ylabel, smooth=False):
     ax.set_ylim(bottom=0)
 
 
-# ------------------------------------------------------------
-# 4. Example Demo
-# ------------------------------------------------------------
 if __name__ == "__main__":
     import pandas as pd
 

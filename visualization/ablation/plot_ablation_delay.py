@@ -1,23 +1,3 @@
-"""
-visualization.ablation.plot_ablation_delay
-----------------------------------------------------------
-Reproduces Fig.7(b): Delay comparison in ablation study.
-
-Compares average inference latency trends of:
-    - D3QN
-    - A-D3QN
-    - DP-D3QN
-    - ADP-D3QN (Proposed)
-
-Input CSV Format (data_csv/ablation_delay.csv):
-------------------------------------------------
-Episode, D3QN, A-D3QN, DP-D3QN, ADP-D3QN
-1, 250, 230, 210, 195
-2, 240, 225, 205, 190
-...
-Units: Latency (milliseconds)
-"""
-
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -30,15 +10,6 @@ def plot_ablation_delay(
     smooth: bool = True,
     method: str = "ema"
 ):
-    """
-    Plot average inference delay during ablation training.
-
-    Args:
-        csv_path (str): Path to CSV file containing delay data.
-        save_path (str): Path to save output figure.
-        smooth (bool): Apply smoothing to reduce noise.
-        method (str): Smoothing method ('ema', 'ma', 'sg', 'gaussian').
-    """
     # Apply unified style
     set_global_plot_style()
 

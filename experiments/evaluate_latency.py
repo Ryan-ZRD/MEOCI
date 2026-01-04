@@ -1,12 +1,4 @@
-"""
-experiments.evaluate_latency
-==========================================================
-Evaluate latency, completion rate, and accuracy of MEOCI framework.
-----------------------------------------------------------
-Used to reproduce experimental results in:
-    - Fig.9: Heterogeneous Device Latency Comparison
-    - Fig.10: Effect of Number of Vehicles
-"""
+
 
 import os
 import csv
@@ -25,9 +17,7 @@ from core.model_zoo.alexnet_me import MultiExitAlexNet
 from core.model_zoo.resnet50_me import MultiExitResNet50
 
 
-# ==========================================================
-# ⚙️ Utility: Evaluate a single model on given environment
-# ==========================================================
+
 def evaluate_model(env, agent, model, num_episodes: int = 10):
     """Evaluate latency and performance metrics."""
     model.eval()
@@ -64,9 +54,7 @@ def evaluate_model(env, agent, model, num_episodes: int = 10):
     }
 
 
-# ==========================================================
-# 🚗 Experiment 1: Heterogeneous Device Comparison (Fig.9)
-# ==========================================================
+
 def evaluate_heterogeneous(cfg_path: str):
     cfg = ConfigManager(cfg_path).config
     set_global_seed(cfg["training"]["seed"])
@@ -122,9 +110,7 @@ def evaluate_heterogeneous(cfg_path: str):
     print(f"\n✅ [Heterogeneous Evaluation] Results saved -> {output_path}")
 
 
-# ==========================================================
-# 🚘 Experiment 2: Vehicle Count Impact (Fig.10)
-# ==========================================================
+
 def evaluate_vehicle_density(cfg_path: str):
     cfg = ConfigManager(cfg_path).config
     set_global_seed(cfg["training"]["seed"])
@@ -172,9 +158,7 @@ def evaluate_vehicle_density(cfg_path: str):
     print(f"\n✅ [Vehicle Density Evaluation] Results saved -> {output_path}")
 
 
-# ==========================================================
-# 🚀 Entry Point
-# ==========================================================
+
 if __name__ == "__main__":
     import argparse
 

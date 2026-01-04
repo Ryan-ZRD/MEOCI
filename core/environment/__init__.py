@@ -10,8 +10,7 @@ and workload generation.
 
 Each submodule provides a concrete component used in the collaborative
 inference system simulation and DRL training process.
-
-📦 Modules included:
+Modules included:
     - vec_env.py              : High-level VEC environment orchestrator
     - vehicle_node.py         : Vehicle node modeling (compute, queue, energy)
     - edge_server.py          : RSU/edge node with task queue and processing logic

@@ -1,19 +1,3 @@
-"""
-visualization.scalability.plot_vehicle_scalability
-----------------------------------------------------------
-Reproduces Fig.16 of the MEOCI paper.
-
-Plots the scalability of different inference frameworks
-under increasing vehicle counts (system load).
-
-Metrics:
-    - Average Inference Latency (ms)
-    - Task Completion Rate (%)
-
-Expected CSV format (results/csv/scalability.csv):
-    VehicleCount,Latency_MEOCI,Latency_Edgent,Latency_FedAdapt,Completion_MEOCI,Completion_Edgent,Completion_FedAdapt
-"""
-
 import os
 import pandas as pd
 import matplotlib.pyplot as plt

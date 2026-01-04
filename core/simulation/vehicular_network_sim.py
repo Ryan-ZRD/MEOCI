@@ -8,33 +8,6 @@ from core.environment.workload_generator import WorkloadGenerator
 
 
 class VehicularNetworkSim:
-    """
-    VehicularNetworkSim
-    ==========================================================
-    Vehicular Edge Collaborative Simulation Environment
-    ----------------------------------------------------------
-    Simulates dynamic interaction among:
-        - Vehicles (compute + mobility + task queue)
-        - Edge servers (RSUs)
-        - Wireless links (channel variation, bandwidth, noise)
-        - Workload generator (task arrival process)
-
-    Provides state transitions for DRL agent (ADP-D3QN).
-
-    Attributes:
-        num_vehicles: number of vehicles in the simulation
-        num_edges: number of RSUs / edge servers
-        bandwidth: average network bandwidth per link (Mbps)
-        noise_power: background noise level (dBm)
-        sim_time: total simulation time (s)
-        channel_model: dynamic channel state generator
-        workload_gen: stochastic workload generator
-
-    Paper Reference:
-        Section 4.1 — Simulation Environment
-        Fig. 5 — Collaborative Inference Workflow
-        Table I — Simulation Parameters
-    """
 
     def __init__(
         self,
@@ -70,17 +43,7 @@ class VehicularNetworkSim:
         self.workload_gen = WorkloadGenerator(arrival_rate=0.3)
         self.history = []  # record per-step metrics
 
-    # ------------------------------------------------------------
-    # Step simulation forward by Δt
-    # ------------------------------------------------------------
     def step(self, delta_t: float = 1.0):
-        """
-        Simulate one time step.
-        1. Update channel states.
-        2. Generate new workloads.
-        3. Assign vehicles to edge servers.
-        4. Compute transmission + computation delay.
-        """
         self.time += delta_t
         step_log = {"time": self.time, "vehicles": []}
 
@@ -117,19 +80,9 @@ class VehicularNetworkSim:
         self.history.append(step_log)
         return step_log
 
-    # ------------------------------------------------------------
-    # Edge selection strategy (greedy / random)
-    # ------------------------------------------------------------
     def _select_best_edge(self, vehicle: VehicleNode) -> EdgeServer:
-        """
-        Selects the best edge server for a given vehicle.
-        Current heuristic: choose server with lowest queue length.
-        """
         return min(self.edges, key=lambda e: e.current_load)
 
-    # ------------------------------------------------------------
-    # Aggregate simulation statistics
-    # ------------------------------------------------------------
     def collect_statistics(self) -> Dict[str, float]:
         delays = [v["delay"] for step in self.history for v in step["vehicles"] if v["delay"] > 0]
         avg_delay = np.mean(delays) if delays else 0.0
@@ -144,9 +97,6 @@ class VehicularNetworkSim:
             "vehicles": self.num_vehicles,
         }
 
-    # ------------------------------------------------------------
-    # Reset environment
-    # ------------------------------------------------------------
     def reset(self):
         self.time = 0.0
         self.history.clear()
@@ -157,13 +107,8 @@ class VehicularNetworkSim:
         for ch in self.channels.values():
             ch.reset()
 
-    # ------------------------------------------------------------
-    # Export simulation trace
-    # ------------------------------------------------------------
     def export_log(self, filepath: str):
-        """
-        Save simulation results to CSV for later visualization.
-        """
+
         import csv
         keys = ["time", "vehicle_id", "edge_id", "delay", "queue", "bandwidth", "snr"]
         with open(filepath, "w", newline="") as f:
@@ -177,7 +122,7 @@ class VehicularNetworkSim:
                     })
 
 
-# ✅ Quick test
+
 if __name__ == "__main__":
     sim = VehicularNetworkSim(num_vehicles=5, num_edges=2)
     for _ in range(10):

@@ -1,19 +1,3 @@
-"""
-visualization.scalability.plot_latency_dynamic_density
-----------------------------------------------------------
-Reproduces Fig.15 of the MEOCI paper.
-
-Plots:
-    - Inference latency comparison under varying vehicle densities
-      for MEOCI (ADP-D3QN) and baseline methods.
-
-Input:
-    results/csv/scalability.csv
-
-Expected CSV format example:
-    VehicleDensity,MEOCI,Edgent,FedAdapt,LBO
-"""
-
 import os
 import pandas as pd
 import matplotlib.pyplot as plt

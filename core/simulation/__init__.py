@@ -1,18 +1,3 @@
-"""
-core.simulation
-==========================================================
-Simulation subsystem for the MEOCI framework.
-----------------------------------------------------------
-This package integrates:
-    1. VehicularNetworkSim — vehicle-edge interaction environment
-    2. EdgeClusterManager  — multi-RSU cluster scheduling
-    3. LatencyEstimator    — analytical latency modeling
-
-Used by:
-    * ADP-D3QN training loop
-    * Ablation and scalability experiments
-    * Visualization (Fig.9–Fig.16)
-"""
 
 from core.simulation.vehicular_network_sim import VehicularNetworkSim
 from core.simulation.edge_cluster_manager import EdgeClusterManager
@@ -121,9 +106,7 @@ def reset_all(envs: Dict[str, Any]):
     print("[Simulation] All modules reset.")
 
 
-# ------------------------------------------------------------
-# ✅ Example usage (manual test)
-# ------------------------------------------------------------
+
 if __name__ == "__main__":
     envs = create_simulation_env(num_vehicles=5, num_edges=2)
     veh_env = envs["vehicular_env"]

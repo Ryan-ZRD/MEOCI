@@ -3,19 +3,6 @@ from typing import Tuple
 
 
 class VehicleNode:
-    """
-    Vehicle Node Model
-    ----------------------------------------------------------
-    Represents a single vehicle participating in VEC collaborative inference.
-
-    Each vehicle:
-      - Executes the shallow part of the DNN up to partition_layer.
-      - Transmits intermediate features to RSU if not early-exiting.
-      - Consumes local compute energy and time.
-      - Can early-exit locally based on model exit confidence.
-
-    Corresponds to §4.1.1 of the MEOCI paper.
-    """
 
     def __init__(self,
                  id: int,
@@ -120,7 +107,7 @@ class VehicleNode:
         }
 
 
-# ✅ Example quick test
+
 if __name__ == "__main__":
     class MockTask:
         def __init__(self):

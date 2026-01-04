@@ -1,11 +1,3 @@
-"""
-experiments.test_multi_exit
-----------------------------------------------------------
-Evaluate multi-exit DNN models (AlexNet / VGG16 / ResNet50)
-to analyze early-exit probability and accuracy.
-Reproduces Fig. 8 in the paper.
-"""
-
 import os
 import csv
 import torch
@@ -23,10 +15,7 @@ from datasets.bdd100k_loader import BDD100KDataset
 
 @torch.no_grad()
 def evaluate_multi_exit(model, dataloader, device):
-    """
-    Evaluate model across all exit points.
-    Return early-exit probability and per-exit accuracy.
-    """
+
     model.eval()
     num_exits = len(model.exits)
     exit_counts = np.zeros(num_exits)

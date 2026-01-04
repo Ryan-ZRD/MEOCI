@@ -1,31 +1,3 @@
-"""
-run.py
-------------------------------------------------------------
-Unified entry point for the MEOCI framework.
-
-This script provides a high-level command-line interface for:
-  • Training ADP-D3QN agents
-  • Evaluating latency, energy, and accuracy
-  • Running ablation and scalability studies
-  • Visualizing paper figures
-  • Launching system monitoring tools
-------------------------------------------------------------
-Example Usage:
-
-Train an agent:
-    python run.py train --config configs/meoci_vgg16.yaml
-
-Evaluate model latency:
-    python run.py evaluate --metric latency --model vgg16
-
-Generate paper figures:
-    python run.py visualize --target all
-
-Start monitoring dashboard and Prometheus:
-    python run.py monitor --mode all
-------------------------------------------------------------
-"""
-
 import argparse
 import os
 import sys
@@ -50,9 +22,6 @@ from deployment.monitoring import (
 )
 
 
-# ------------------------------------------------------------
-# Utility functions
-# ------------------------------------------------------------
 def load_config(config_path: str):
     """Load YAML configuration file."""
     with open(config_path, "r", encoding="utf-8") as f:
@@ -79,9 +48,6 @@ def print_header():
     print()
 
 
-# ------------------------------------------------------------
-# Argument Parser
-# ------------------------------------------------------------
 def parse_args():
     parser = argparse.ArgumentParser(description="MEOCI Framework - Unified Launcher")
 
@@ -123,9 +89,7 @@ def parse_args():
     return parser.parse_args()
 
 
-# ------------------------------------------------------------
-# Main Dispatcher
-# ------------------------------------------------------------
+
 def main():
     args = parse_args()
     ensure_dirs()
@@ -181,8 +145,6 @@ def main():
     print("\n[INFO] Execution completed successfully.")
 
 
-# ------------------------------------------------------------
-# Entry Point
-# ------------------------------------------------------------
+
 if __name__ == "__main__":
     main()

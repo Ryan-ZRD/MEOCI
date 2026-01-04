@@ -1,28 +1,10 @@
-"""
-config.py
-------------------------------------------------------------
-Global configuration file for the MEOCI framework.
-
-This module centralizes:
-  • Global hyperparameters
-  • Default runtime paths
-  • GPU / seed / device setup
-  • Logging and experiment naming utilities
-
-All other modules (training, evaluation, visualization, etc.)
-can safely import configuration values from here.
-------------------------------------------------------------
-"""
-
 import os
 import torch
 import random
 import numpy as np
 from datetime import datetime
 
-# ------------------------------------------------------------
-# Global experiment configuration
-# ------------------------------------------------------------
+
 
 # Random seed for reproducibility
 GLOBAL_SEED = 42
@@ -44,13 +26,11 @@ PATHS = {
     "configs": os.path.join(PROJECT_ROOT, "configs"),
 }
 
-# Ensure directory structure exists
+
 for path in PATHS.values():
     os.makedirs(path, exist_ok=True)
 
-# ------------------------------------------------------------
-# Default experiment settings
-# ------------------------------------------------------------
+
 EXPERIMENT = {
     "exp_name": "MEOCI_Default_Run",
     "timestamp": datetime.now().strftime("%Y%m%d_%H%M%S"),
@@ -60,9 +40,7 @@ EXPERIMENT = {
     "wandb_logging": False,
 }
 
-# ------------------------------------------------------------
-# Model and training hyperparameters
-# ------------------------------------------------------------
+
 HYPERPARAMS = {
     "batch_size": 64,
     "gamma": 0.98,
@@ -78,9 +56,7 @@ HYPERPARAMS = {
     "reward_scale": 1.0,
 }
 
-# ------------------------------------------------------------
-# Environment & system simulation defaults
-# ------------------------------------------------------------
+
 ENVIRONMENT = {
     "num_vehicles": 10,
     "num_edge_servers": 2,
@@ -93,22 +69,16 @@ ENVIRONMENT = {
     "dynamic_topology": True,
 }
 
-# ------------------------------------------------------------
-# Logging configuration
-# ------------------------------------------------------------
+
 LOGGING = {
     "log_to_file": True,
     "log_file": os.path.join(PATHS["logs"], "runtime.log"),
     "log_level": "INFO",
 }
 
-# ------------------------------------------------------------
-# Utility functions
-# ------------------------------------------------------------
+
 def set_random_seed(seed: int = GLOBAL_SEED):
-    """
-    Fix random seeds across all libraries for reproducibility.
-    """
+
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -119,25 +89,19 @@ def set_random_seed(seed: int = GLOBAL_SEED):
 
 
 def get_experiment_name():
-    """
-    Generate a unique experiment identifier based on timestamp.
-    """
+
     return f"{EXPERIMENT['exp_name']}_{EXPERIMENT['timestamp']}"
 
 
 def get_save_path(filename: str = None):
-    """
-    Return absolute path for saving model or log files.
-    """
+
     exp_dir = os.path.join(PATHS["results"], get_experiment_name())
     os.makedirs(exp_dir, exist_ok=True)
     return exp_dir if filename is None else os.path.join(exp_dir, filename)
 
 
 def print_config_summary():
-    """
-    Print a readable summary of the key configuration settings.
-    """
+
     print("=" * 60)
     print(" MEOCI Framework - Configuration Summary ")
     print("=" * 60)
@@ -156,9 +120,7 @@ def print_config_summary():
     print("=" * 60)
 
 
-# ------------------------------------------------------------
-# Initialize defaults
-# ------------------------------------------------------------
+
 set_random_seed(GLOBAL_SEED)
 
 if __name__ == "__main__":

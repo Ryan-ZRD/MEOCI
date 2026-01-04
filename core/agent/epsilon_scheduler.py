@@ -3,17 +3,6 @@ from collections import deque
 
 
 class AdaptiveEpsilonScheduler:
-    """
-    Adaptive ε–greedy Scheduler for ADP-D3QN
-    -------------------------------------------------------
-    Implements dynamic exploration control as described in
-    Section 3.4 of the MEOCI paper.
-
-    Key Features:
-    - Exponential decay over time (base schedule)
-    - Reward variance modulation (stability-based exploration)
-    - Optional network volatility adjustment (environment-driven)
-    """
 
     def __init__(self,
                  epsilon_max: float = 1.0,
@@ -100,7 +89,6 @@ class AdaptiveEpsilonScheduler:
         }
 
 
-# ✅ Quick verification
 if __name__ == "__main__":
     scheduler = AdaptiveEpsilonScheduler(decay_rate=0.995, beta=0.25)
     rewards = np.sin(np.linspace(0, 10, 100)) * 5  # simulate oscillating reward

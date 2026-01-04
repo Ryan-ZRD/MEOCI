@@ -3,19 +3,7 @@ from typing import List, Dict, Optional
 
 
 class EarlyExitSelector:
-    """
-    EarlyExitSelector
-    ==========================================================
-    Implements the multi-exit decision mechanism for collaborative
-    inference models with early-exit branches.
 
-    The selector dynamically determines which exit point to use
-    for each inference task, balancing latency and accuracy.
-
-    References:
-        Section 3.4 - Early-Exit Point Selection
-        Eq. (17)–(18) in the MEOCI paper
-    """
 
     def __init__(self,
                  acc_threshold: float = 0.80,        # minimum acceptable accuracy
@@ -31,34 +19,16 @@ class EarlyExitSelector:
         self.energy_per_flop = energy_per_flop
         self.random_state = np.random.RandomState(seed)
 
-    # ------------------------------------------------------------
-    # Compute exit score for one candidate
-    # ------------------------------------------------------------
+
     def _compute_exit_score(self, exit_info: Dict) -> float:
-        """
-        Compute cost for each exit:
-        J_i = λ1*T_i + λ2*E_i − λ3*Conf_i
-        """
         T_i = exit_info["latency"]
         E_i = exit_info["energy"]
         C_i = exit_info["confidence"]
         cost = self.lambda_delay * T_i + self.lambda_energy * E_i - self.lambda_conf * C_i
         return cost
 
-    # ------------------------------------------------------------
-    # Select the best exit point
-    # ------------------------------------------------------------
+
     def select_exit_point(self, exits: List[Dict]) -> Dict:
-        """
-        Select the optimal exit point based on latency–energy–confidence tradeoff.
-
-        Args:
-            exits: list of exits, each dict contains:
-                   {"id", "latency", "accuracy", "confidence", "flops"}
-
-        Returns:
-            chosen exit dict
-        """
         valid_exits = [e for e in exits if e["accuracy"] >= self.acc_threshold]
         if not valid_exits:
             # fallback to final exit
@@ -73,9 +43,7 @@ class EarlyExitSelector:
         best = min(valid_exits, key=lambda x: x["score"])
         return best
 
-    # ------------------------------------------------------------
-    # Optional: adaptive accuracy threshold update
-    # ------------------------------------------------------------
+
     def adapt_threshold(self, observed_acc: float):
         """
         Dynamically adjust accuracy threshold based on observed accuracy.
@@ -85,9 +53,7 @@ class EarlyExitSelector:
         else:
             self.acc_threshold = min(0.9, self.acc_threshold + 0.005)
 
-    # ------------------------------------------------------------
-    # Simulate multi-exit profile (for test)
-    # ------------------------------------------------------------
+
     def simulate_exits(self, num_exits: int = 5) -> List[Dict]:
         exits = []
         for i in range(num_exits):
@@ -104,9 +70,7 @@ class EarlyExitSelector:
             })
         return exits
 
-    # ------------------------------------------------------------
-    # Summary utility
-    # ------------------------------------------------------------
+
     def summary(self, chosen_exit: Dict) -> Dict:
         return {
             "exit_id": chosen_exit["id"],
@@ -118,7 +82,7 @@ class EarlyExitSelector:
         }
 
 
-# ✅ Example quick test
+
 if __name__ == "__main__":
     selector = EarlyExitSelector(acc_threshold=0.8)
     simulated = selector.simulate_exits(num_exits=5)

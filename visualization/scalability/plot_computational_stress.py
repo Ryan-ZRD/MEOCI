@@ -1,19 +1,3 @@
-"""
-visualization.scalability.plot_computational_stress
-----------------------------------------------------------
-Plots the effect of RSU/edge computational stress on
-average inference latency for MEOCI and baseline methods.
-
-This figure corresponds to the computational scalability analysis
-(Fig.17) in the MEOCI paper.
-
-Expected CSV Format (results/csv/scalability.csv):
-    CPU_Load,MEOCI,Edgent,FedAdapt,LBO
-
-Where:
-    CPU_Load: percentage of CPU utilization or computational stress level
-    MEOCI, Edgent, FedAdapt, LBO: average inference latency (ms)
-"""
 
 import os
 import pandas as pd

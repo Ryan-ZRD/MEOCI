@@ -1,31 +1,10 @@
-"""
-visualization.heterogeneous.heterogeneity_plot_utils
-----------------------------------------------------------
-Shared plotting utilities for heterogeneous inference latency visualization (Fig.9 series)
-
-Description:
-    Provides reusable visualization utilities used by:
-        - plot_latency_alexnet.py
-        - plot_latency_vgg16.py
-        - plot_latency_resnet50.py
-        - plot_latency_yolov10n.py
-
-Core Features:
-    • Unified color and style scheme across all models
-    • Highlighting for "ADP-D3QN (Ours)"
-    • Dynamic axis formatting and value labeling
-    • Grid, font, and legend styling
-"""
-
 import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
 
-# ------------------------------------------------------------
-# 1. Global Style Configuration
-# ------------------------------------------------------------
+
 COLORS = {
     "Nano": "#1f77b4",          # Blue
     "Pi4B": "#ff7f0e",          # Orange
@@ -44,9 +23,7 @@ plt.rcParams.update({
 })
 
 
-# ------------------------------------------------------------
-# 2. Utility Functions
-# ------------------------------------------------------------
+
 def create_output_dir(save_path: str):
     """Create directories for the save path if not exist."""
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
@@ -147,9 +124,7 @@ def generate_demo_data() -> pd.DataFrame:
     return pd.DataFrame(data)
 
 
-# ------------------------------------------------------------
-# 3. Standalone Demo
-# ------------------------------------------------------------
+
 if __name__ == "__main__":
     df_demo = generate_demo_data()
     plot_heterogeneous_latency(

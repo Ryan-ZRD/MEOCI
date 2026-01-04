@@ -1,17 +1,3 @@
-"""
-datasets.split_dataset
-==========================================================
-Dataset splitting utility for MEOCI framework.
-----------------------------------------------------------
-Splits datasets (e.g., BDD100K) into train/val/test subsets
-with reproducible ratios and optional stratified sampling.
-
-Used in:
-    - Pretraining & finetuning of MEOCI multi-exit models
-    - Ablation studies (Fig. 8–10)
-    - Environment simulation input division
-"""
-
 import os
 import json
 import random
@@ -27,24 +13,7 @@ def split_dataset(
     seed: int = 42,
     save_format: str = "json"
 ) -> Dict[str, List[str]]:
-    """
-    Split dataset into train / val / test sets.
 
-    Args:
-        dataset_root (str): Root directory containing images and labels.
-        output_dir (str): Where to save split files.
-        ratios (tuple): (train, val, test) ratio.
-        stratify (bool): Whether to use label-based stratification.
-        seed (int): Random seed for reproducibility.
-        save_format (str): 'json' or 'txt'
-
-    Returns:
-        dict: {
-            "train": [...],
-            "val": [...],
-            "test": [...]
-        }
-    """
     assert sum(ratios) <= 1.0, "Sum of split ratios must be <= 1.0"
 
     random.seed(seed)
@@ -103,13 +72,9 @@ def split_dataset(
     return splits
 
 
-# ------------------------------------------------------------
-# ✅ Utility: load split files
-# ------------------------------------------------------------
+
 def load_splits(path: str) -> Dict[str, List[str]]:
-    """
-    Load existing dataset splits.
-    """
+
     if path.endswith(".json"):
         with open(path, "r") as f:
             return json.load(f)
@@ -125,9 +90,7 @@ def load_splits(path: str) -> Dict[str, List[str]]:
         raise ValueError(f"Invalid split file path: {path}")
 
 
-# ------------------------------------------------------------
-# 🧪 Example Usage
-# ------------------------------------------------------------
+
 if __name__ == "__main__":
     dataset_root = "/path/to/bdd100k"
     output_dir = "./splits"

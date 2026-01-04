@@ -5,23 +5,7 @@ from .base_multi_exit import MultiExitBase
 
 
 class MultiExitVGG16(MultiExitBase):
-    """
-    MultiExitVGG16
-    ==========================================================
-    Multi-exit variant of VGG16 with 5 early-exit branches
-    for adaptive collaborative inference in MEOCI.
 
-    Exits are placed after:
-      - block1 (conv2)
-      - block2 (conv4)
-      - block3 (conv7)
-      - block4 (conv10)
-      - block5 (conv13, final exit)
-
-    References:
-        Section 4.2, Fig. 6(b), Table II
-        "Multi-Exit Neural Network Design"
-    """
 
     def __init__(self, num_classes: int = 10):
         super(MultiExitVGG16, self).__init__(
@@ -30,9 +14,7 @@ class MultiExitVGG16(MultiExitBase):
             num_classes=num_classes
         )
 
-    # ------------------------------------------------------------
-    # Build the multi-exit VGG16 architecture
-    # ------------------------------------------------------------
+
     def _build_model(self):
         cfg = [64, 64, 'M',
                128, 128, 'M',
@@ -66,13 +48,9 @@ class MultiExitVGG16(MultiExitBase):
             nn.Linear(4096, self.num_classes),
         )
 
-    # ------------------------------------------------------------
-    # Forward with dynamic early exit
-    # ------------------------------------------------------------
+
     def forward(self, x: torch.Tensor, exit_threshold: float = 0.9):
-        """
-        Adaptive forward with early exits.
-        """
+
         outputs = []
         exit_id = self.num_exits - 1
 
@@ -95,17 +73,13 @@ class MultiExitVGG16(MultiExitBase):
         outputs.append(final_logits)
         return final_logits, exit_id
 
-    # ------------------------------------------------------------
-    # Exit computation for conv exits
-    # ------------------------------------------------------------
+
     def _compute_exit_output(self, x: torch.Tensor, idx: int) -> torch.Tensor:
-        """
-        Handles convolutional exits (shared design for VGG).
-        """
+
         return self.exits[idx](x)
 
 
-# ✅ Example quick test
+
 if __name__ == "__main__":
     model = MultiExitVGG16(num_classes=10)
     model.summary()

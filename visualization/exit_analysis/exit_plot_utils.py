@@ -1,17 +1,4 @@
-"""
-visualization.exit_analysis.exit_plot_utils
-----------------------------------------------------------
-Utility module for Exit Probability visualization.
 
-Used by:
-    - plot_exit_probability_alexnet.py
-    - plot_exit_probability_vgg16.py
-
-Provides:
-    - CSV data loader and validation
-    - Consistent bar style and color mapping
-    - Global style setup for exit probability plots
-"""
 
 import os
 import pandas as pd
@@ -19,9 +6,7 @@ import matplotlib.pyplot as plt
 from visualization.shared_styles import set_global_plot_style
 
 
-# ------------------------------------------------------------
-# 1. Standardized Color Map for Exit Probability Analysis
-# ------------------------------------------------------------
+
 COLOR_MAP = {
     "Low Load": "#1f77b4",     # Blue
     "Medium Load": "#ff7f0e",  # Orange
@@ -29,19 +14,9 @@ COLOR_MAP = {
 }
 
 
-# ------------------------------------------------------------
-# 2. CSV Loader with Validation
-# ------------------------------------------------------------
+
 def load_exit_csv(csv_path: str) -> pd.DataFrame:
-    """
-    Load exit probability data from CSV file.
 
-    Args:
-        csv_path (str): Path to CSV file (should include columns: Exit, Low Load, Medium Load, High Load)
-
-    Returns:
-        df (pd.DataFrame): Loaded and validated DataFrame.
-    """
     if not os.path.exists(csv_path):
         raise FileNotFoundError(f"Cannot find CSV file: {csv_path}")
 
@@ -59,13 +34,9 @@ def load_exit_csv(csv_path: str) -> pd.DataFrame:
     return df
 
 
-# ------------------------------------------------------------
-# 3. Plot Style Helper
-# ------------------------------------------------------------
+
 def setup_exit_plot(title: str, xlabel: str = "Exit Branch Index", ylabel: str = "Selection Probability"):
-    """
-    Apply consistent plotting style for exit probability figures.
-    """
+
     set_global_plot_style()
     plt.figure(figsize=(7, 4.5))
     plt.title(title)
@@ -75,19 +46,9 @@ def setup_exit_plot(title: str, xlabel: str = "Exit Branch Index", ylabel: str =
     plt.ylim(0, 1.0)
 
 
-# ------------------------------------------------------------
-# 4. Bar Plot Drawer
-# ------------------------------------------------------------
-def draw_exit_bars(df: pd.DataFrame, scenarios=None, colors=None, bar_width: float = 0.25):
-    """
-    Draw grouped bar chart for exit probabilities.
 
-    Args:
-        df (pd.DataFrame): Exit probability data
-        scenarios (list[str]): Scenarios (e.g., ["Low Load", "Medium Load", "High Load"])
-        colors (list[str]): Color list for each scenario
-        bar_width (float): Width of each bar
-    """
+def draw_exit_bars(df: pd.DataFrame, scenarios=None, colors=None, bar_width: float = 0.25):
+
     if scenarios is None:
         scenarios = ["Low Load", "Medium Load", "High Load"]
     if colors is None:
@@ -112,13 +73,9 @@ def draw_exit_bars(df: pd.DataFrame, scenarios=None, colors=None, bar_width: flo
     plt.legend(title="Load Scenario", loc="upper right")
 
 
-# ------------------------------------------------------------
-# 5. Figure Saving Utility
-# ------------------------------------------------------------
+
 def save_exit_plot(path: str):
-    """
-    Save exit probability plot to file with standard format.
-    """
+
     os.makedirs(os.path.dirname(path), exist_ok=True)
     plt.tight_layout()
     plt.savefig(path, dpi=400, bbox_inches="tight")
@@ -126,9 +83,7 @@ def save_exit_plot(path: str):
     print(f"[Saved] {path}")
 
 
-# ------------------------------------------------------------
-# 6. Example Demo (Optional)
-# ------------------------------------------------------------
+
 if __name__ == "__main__":
     example_csv = "visualization/data_csv/exit_alexnet.csv"
 

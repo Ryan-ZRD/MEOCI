@@ -1,18 +1,8 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 class DuelingQNetwork(nn.Module):
-    """
-    Dueling Double Deep Q-Network (Dueling-DDQN)
-    -------------------------------------------------
-    Implements the Q-value estimation architecture used in the ADP-D3QN agent.
-    This network separately estimates the *state value* and *advantage* for
-    each action to improve learning stability and convergence.
 
-    Paper Reference:
-        Section 3.2 - Adaptive Dual-Pool Dueling Double DQN (ADP-D3QN)
-    """
 
     def __init__(self, state_dim: int, action_dim: int, hidden_dims=(128, 256, 128),
                  activation="relu", dropout=0.1):

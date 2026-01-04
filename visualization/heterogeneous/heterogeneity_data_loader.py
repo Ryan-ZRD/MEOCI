@@ -1,28 +1,3 @@
-"""
-visualization.heterogeneous.heterogeneity_data_loader
-----------------------------------------------------------
-Unified data loader for heterogeneous inference latency visualization (Fig.9 Series)
-
-Description:
-    Loads latency data (ms) of multiple models and inference frameworks
-    from CSV files under visualization/data_csv/.
-
-Supported Models:
-    - AlexNet-ME
-    - VGG16-ME
-    - ResNet50-ME
-    - YOLOv10n-ME
-
-Supported Devices:
-    - NVIDIA Jetson Nano
-    - Raspberry Pi 4B
-
-Typical Use:
-    >>> from visualization.heterogeneous.heterogeneity_data_loader import load_latency_data
-    >>> df_vgg = load_latency_data("vgg16")
-    >>> print(df_vgg.head())
-"""
-
 import os
 import pandas as pd
 
@@ -32,15 +7,6 @@ REQUIRED_COLUMNS = ["Method", "Device", "Latency(ms)"]
 
 
 def load_latency_data(model_name: str = "alexnet") -> pd.DataFrame:
-    """
-    Load heterogeneous latency data for the given model.
-
-    Args:
-        model_name (str): One of ["alexnet", "vgg16", "resnet50", "yolov10n"].
-
-    Returns:
-        pd.DataFrame: Filtered DataFrame with columns ['Method', 'Device', 'Latency(ms)'].
-    """
     if not os.path.exists(DATA_CSV_PATH):
         raise FileNotFoundError(f"Missing CSV file: {DATA_CSV_PATH}")
 
@@ -79,15 +45,6 @@ def load_latency_data(model_name: str = "alexnet") -> pd.DataFrame:
 
 
 def summarize_latency(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Compute average latency per method across devices for summary table.
-
-    Args:
-        df (pd.DataFrame): Input DataFrame from load_latency_data().
-
-    Returns:
-        pd.DataFrame: Summary table with average latency values.
-    """
     summary = (
         df.groupby("Method")["Latency(ms)"]
         .mean()
@@ -100,12 +57,6 @@ def summarize_latency(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def compare_devices(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Compare Nano and Pi4B latencies for each method.
-
-    Returns:
-        pd.DataFrame: Table with per-device latency and delta.
-    """
     pivot = df.pivot(index="Method", columns="Device", values="Latency(ms)").reset_index()
     pivot["Δ (Pi4B - Nano)"] = pivot["Pi4B"] - pivot["Nano"]
     return pivot

@@ -1,21 +1,4 @@
-"""
-visualization.accuracy_cdf.plot_accuracy_comparison
-----------------------------------------------------------
-Reproduces Fig.10(a): Accuracy CDF Comparison of Edge Inference Frameworks
 
-Description:
-    Plots the cumulative distribution function (CDF) of prediction accuracy
-    across multiple inference frameworks (Vehicle-Only, Edge-Only, Edgent, FedAdapt, LBO, ADP-D3QN).
-
-Input CSV Format (visualization/data_csv/accuracy_comparison.csv):
--------------------------------------------------------------------
-Method,Accuracy
-Vehicle-Only,0.74
-Vehicle-Only,0.76
-...
-ADP-D3QN (Ours),0.90
-ADP-D3QN (Ours),0.92
-"""
 
 import os
 import pandas as pd
@@ -28,18 +11,10 @@ def plot_accuracy_cdf(
     csv_path: str = "visualization/data_csv/accuracy_comparison.csv",
     save_path: str = "results/plots/fig10a_accuracy_cdf.png"
 ):
-    """
-    Plot CDF comparison of model inference accuracy across different frameworks.
 
-    Args:
-        csv_path (str): Path to input CSV containing accuracy samples.
-        save_path (str): Output path for saving the figure.
-    """
     set_global_plot_style()
 
-    # ------------------------------------------------------------
-    # 1. Load Data
-    # ------------------------------------------------------------
+
     if not os.path.exists(csv_path):
         raise FileNotFoundError(f"Missing CSV file: {csv_path}")
 
@@ -64,9 +39,7 @@ def plot_accuracy_cdf(
         "ADP-D3QN (Ours)": "#d62728",
     }
 
-    # ------------------------------------------------------------
-    # 2. Compute CDF for each method
-    # ------------------------------------------------------------
+
     plt.figure(figsize=(7.5, 5))
     for method in method_order:
         acc_values = df[df["Method"] == method]["Accuracy"].dropna().values
@@ -83,9 +56,7 @@ def plot_accuracy_cdf(
             linestyle="-" if method == "ADP-D3QN (Ours)" else "--"
         )
 
-    # ------------------------------------------------------------
-    # 3. Plot Formatting
-    # ------------------------------------------------------------
+
     plt.xlabel("Accuracy")
     plt.ylabel("Cumulative Probability")
     plt.title("CDF of Inference Accuracy Across Frameworks")
@@ -93,9 +64,7 @@ def plot_accuracy_cdf(
     plt.legend(loc="lower right", frameon=True)
     plt.tight_layout()
 
-    # ------------------------------------------------------------
-    # 4. Save
-    # ------------------------------------------------------------
+
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     plt.savefig(save_path, dpi=400, bbox_inches="tight")
     plt.close()

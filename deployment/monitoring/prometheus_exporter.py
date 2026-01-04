@@ -1,19 +1,3 @@
-"""
-prometheus_exporter.py
-------------------------------------------------------------
-Prometheus-compatible system metrics exporter for the MEOCI framework.
-
-Features:
-- Exposes CPU, memory, GPU, latency, and energy metrics
-- Compatible with Prometheus and Grafana dashboards
-- Can run in parallel with dashboard.py or training scripts
-------------------------------------------------------------
-Run:
-    python deployment/monitoring/prometheus_exporter.py
-Then open http://localhost:9091/metrics
-------------------------------------------------------------
-"""
-
 from prometheus_client import start_http_server, Gauge
 import psutil
 import time
@@ -32,13 +16,7 @@ class PrometheusExporter:
     """Prometheus exporter for MEOCI system and experiment metrics."""
 
     def __init__(self, port: int = 9091, refresh_interval: float = 2.0):
-        """
-        Initialize Prometheus exporter.
 
-        Args:
-            port: Port to expose metrics
-            refresh_interval: Update interval (in seconds)
-        """
         self.port = port
         self.refresh_interval = refresh_interval
         self._setup_metrics()
@@ -58,9 +36,7 @@ class PrometheusExporter:
         self.throughput = Gauge("meoci_throughput_ips", "Inference throughput (images/sec)")
         self.temperature = Gauge("meoci_device_temperature_c", "Device temperature (Celsius)")
 
-    # ------------------------------------------------------------
-    # Metric Collection
-    # ------------------------------------------------------------
+
     def collect_metrics(self):
         """Continuously collect system metrics and update Prometheus gauges."""
         prev_net_io = psutil.net_io_counters()
@@ -105,9 +81,7 @@ class PrometheusExporter:
 
             time.sleep(self.refresh_interval)
 
-    # ------------------------------------------------------------
-    # Start Exporter
-    # ------------------------------------------------------------
+
     def start(self):
         """Start Prometheus exporter service."""
         start_http_server(self.port)
@@ -115,9 +89,7 @@ class PrometheusExporter:
         self.collect_metrics()
 
 
-# ------------------------------------------------------------
-# Main Entry
-# ------------------------------------------------------------
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="[%(asctime)s] %(levelname)s: %(message)s")
     exporter = PrometheusExporter(port=9091, refresh_interval=2.0)

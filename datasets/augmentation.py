@@ -1,18 +1,3 @@
-"""
-datasets.augmentation
-==========================================================
-Custom data augmentation utilities for MEOCI framework.
-----------------------------------------------------------
-Supports two augmentation profiles:
-    1. LightAugment   — for real-time edge inference
-    2. StrongAugment  — for robust offline model training
-
-Used in:
-    - BDD100KDataset (datasets/bdd100k_loader.py)
-    - Multi-exit model training and evaluation
-    - Edge offloading simulations (noise / lighting variation)
-"""
-
 import random
 import numpy as np
 import cv2
@@ -20,11 +5,9 @@ from torchvision import transforms
 from PIL import Image, ImageEnhance
 
 
-# ------------------------------------------------------------
-# 🎛️ Random Gaussian Blur
-# ------------------------------------------------------------
+
 class RandomGaussianBlur:
-    """Randomly apply Gaussian blur with variable kernel size."""
+
 
     def __init__(self, p: float = 0.3):
         self.p = p
@@ -37,11 +20,8 @@ class RandomGaussianBlur:
         return img
 
 
-# ------------------------------------------------------------
-# 🌧️ Random Weather Effects (fog, rain, motion blur)
-# ------------------------------------------------------------
+
 class RandomWeatherEffect:
-    """Simulate environmental distortions for vehicular data."""
 
     def __init__(self, p: float = 0.2):
         self.p = p
@@ -77,9 +57,7 @@ class RandomWeatherEffect:
         return Image.fromarray(np.clip(img_np, 0, 255).astype(np.uint8))
 
 
-# ------------------------------------------------------------
-# 🔆 LightAugment: lightweight augmentations for inference
-# ------------------------------------------------------------
+
 def LightAugment(image_size=(224, 224)):
     """
     Lightweight augmentation suitable for low-latency edge inference.
@@ -95,9 +73,7 @@ def LightAugment(image_size=(224, 224)):
     ])
 
 
-# ------------------------------------------------------------
-# ⚡ StrongAugment: robust augmentations for training
-# ------------------------------------------------------------
+
 def StrongAugment(image_size=(224, 224)):
     """
     Heavier augmentation strategy for robust model generalization.
@@ -117,10 +93,6 @@ def StrongAugment(image_size=(224, 224)):
                              std=[0.229, 0.224, 0.225])
     ])
 
-
-# ------------------------------------------------------------
-# 🧪 Example usage
-# ------------------------------------------------------------
 if __name__ == "__main__":
     from PIL import Image
 

@@ -1,25 +1,10 @@
-"""
-visualization.scalability.scalability_utils
-----------------------------------------------------------
-Utility functions shared by scalability visualization scripts.
-Used in plotting Fig.14–Fig.17 for MEOCI paper.
-
-Includes:
-    - Data loading from CSV files
-    - Moving average smoothing
-    - Normalization & statistical helpers
-    - Consistent color palette and line styles
-"""
-
 import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
 
-# ------------------------------------------------------
-# 1. Data Loading
-# ------------------------------------------------------
+
 def load_scalability_data(csv_path: str) -> pd.DataFrame:
     """Load scalability experiment data from a CSV file."""
     if not os.path.exists(csv_path):
@@ -30,9 +15,6 @@ def load_scalability_data(csv_path: str) -> pd.DataFrame:
     return df
 
 
-# ------------------------------------------------------
-# 2. Smoothing Utilities
-# ------------------------------------------------------
 def moving_average(data: np.ndarray, window_size: int = 3) -> np.ndarray:
     """Apply simple moving average smoothing."""
     if len(data) < window_size:
@@ -48,9 +30,7 @@ def exponential_smoothing(data: np.ndarray, alpha: float = 0.3) -> np.ndarray:
     return np.array(smoothed)
 
 
-# ------------------------------------------------------
-# 3. Normalization Helpers
-# ------------------------------------------------------
+
 def normalize(data: np.ndarray) -> np.ndarray:
     """Normalize data to [0, 1] range."""
     dmin, dmax = np.min(data), np.max(data)
@@ -63,17 +43,12 @@ def standardize(data: np.ndarray) -> np.ndarray:
     return (data - mean) / (std + 1e-8)
 
 
-# ------------------------------------------------------
-# 4. Statistical Utilities
-# ------------------------------------------------------
+
 def compute_stats(data: np.ndarray):
     """Return mean and standard deviation."""
     return np.mean(data), np.std(data)
 
 
-# ------------------------------------------------------
-# 5. Visualization Aesthetics
-# ------------------------------------------------------
 def get_color_palette():
     """Return a consistent color palette for scalability plots."""
     return {
@@ -98,9 +73,7 @@ def add_legend(ax, loc="best", fontsize=10):
     ax.legend(loc=loc, fontsize=fontsize, frameon=False)
 
 
-# ------------------------------------------------------
-# 6. Example Use for Quick Debug
-# ------------------------------------------------------
+
 if __name__ == "__main__":
     # Example test to verify functions
     test_path = "results/csv/scalability.csv"

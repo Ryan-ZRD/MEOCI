@@ -1,10 +1,3 @@
-"""
-experiments.analyze_energy
-----------------------------------------------------------
-Analyze the impact of energy consumption constraints on
-inference latency under the MEOCI framework.
-Reproduces Fig. 13 of the paper.
-"""
 
 import os
 import csv

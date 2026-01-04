@@ -1,35 +1,14 @@
-"""
-visualization.delay_constraints.delay_constraints_utils
--------------------------------------------------------
-Utility functions for delay constraint experiments (Fig.13a–13b).
-
-Includes:
-    • CSV data loader with validation
-    • Accuracy/completion rate trend summarization
-    • Optional synthetic data generator (for testing visualization)
-"""
-
 import os
 import pandas as pd
 import numpy as np
-from visualization.shared_styles.smoothing import exponential_smooth
+from visualization.shared_styles.smoothing import exponential_moving_average
 
 
-# ------------------------------------------------------------
-# 1. Data loading
-# ------------------------------------------------------------
+
 def load_delay_constraints_data(
     csv_path: str = "visualization/data_csv/delay_constraints.csv"
 ) -> pd.DataFrame:
-    """
-    Load and validate delay constraint dataset.
 
-    Args:
-        csv_path (str): Path to the delay constraint CSV file.
-
-    Returns:
-        pd.DataFrame: Validated dataframe containing delay vs. metrics.
-    """
     if not os.path.exists(csv_path):
         raise FileNotFoundError(f"Missing dataset: {csv_path}")
 
@@ -45,19 +24,9 @@ def load_delay_constraints_data(
     return df
 
 
-# ------------------------------------------------------------
-# 2. Trend summarization
-# ------------------------------------------------------------
+
 def summarize_delay_effects(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Compute statistical summary for delay constraint effects.
 
-    Args:
-        df (pd.DataFrame): Delay constraint dataset.
-
-    Returns:
-        pd.DataFrame: Summary statistics including growth rate and relative gain.
-    """
     base_col = "Delay Constraint (ms)"
     methods = [c for c in df.columns if c != base_col]
 
@@ -76,42 +45,23 @@ def summarize_delay_effects(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(summary)
 
 
-# ------------------------------------------------------------
-# 3. Data smoothing
-# ------------------------------------------------------------
+
 def smooth_delay_curves(df: pd.DataFrame, alpha: float = 0.3) -> pd.DataFrame:
-    """
-    Apply exponential smoothing to each column except the delay axis.
 
-    Args:
-        df (pd.DataFrame): Raw dataframe.
-        alpha (float): Smoothing coefficient (0–1).
-
-    Returns:
-        pd.DataFrame: Smoothed dataframe.
-    """
     base_col = "Delay Constraint (ms)"
     smoothed_df = df.copy()
     for col in df.columns:
         if col != base_col:
-            smoothed_df[col] = exponential_smooth(df[col].values, alpha)
+            smoothed_df[col] = exponential_moving_average(df[col].values, alpha)
     return smoothed_df
 
 
-# ------------------------------------------------------------
-# 4. Synthetic data generator (for testing)
-# ------------------------------------------------------------
+
 def generate_synthetic_delay_data(
     save_path: str = "visualization/data_csv/delay_constraints.csv",
     random_seed: int = 42
 ) -> None:
-    """
-    Generate synthetic delay constraint dataset for quick testing.
 
-    Args:
-        save_path (str): Destination to save the synthetic CSV.
-        random_seed (int): Random seed for reproducibility.
-    """
     np.random.seed(random_seed)
 
     delays = np.array([50, 100, 150, 200, 250, 300])
@@ -136,9 +86,7 @@ def generate_synthetic_delay_data(
     print(f"[Generated synthetic data] -> {save_path}")
 
 
-# ------------------------------------------------------------
-# 5. Example execution
-# ------------------------------------------------------------
+
 if __name__ == "__main__":
     print(">>> Generating synthetic dataset for delay constraint experiments...")
     generate_synthetic_delay_data()

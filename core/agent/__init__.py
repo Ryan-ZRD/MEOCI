@@ -10,7 +10,7 @@ and early-exit point selection in Vehicular Edge Computing (VEC).
 
 Main Components:
 ----------------
-📦 Modules included:
+Modules included:
     - network.py             : Dueling Double Q-Network architecture
     - replay_buffer.py       : Dual experience replay buffers (E1 / E2)
     - epsilon_scheduler.py   : Adaptive ε-greedy exploration control
@@ -26,10 +26,10 @@ Key Features:
 
 Example:
 --------
->>> from core.agent import ADP_D3QN_Agent
+>>> from core.agent import ADP_D3QNAgent
 >>> from core.environment import VehicularEdgeEnv
 >>> env = VehicularEdgeEnv()
->>> agent = ADP_D3QN_Agent(state_dim=8, action_dim=12)
+>>> agent = ADP_D3QNAgent(state_dim=8, action_dim=12)
 >>> state = env.reset()
 >>> action = agent.select_action(state)
 >>> next_state, reward, done, info = env.step(action)

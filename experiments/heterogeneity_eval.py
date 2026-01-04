@@ -1,10 +1,3 @@
-"""
-experiments.heterogeneity_eval
-----------------------------------------------------------
-Evaluate collaborative inference performance across heterogeneous devices.
-Reproduces Fig.9 of the MEOCI paper.
-"""
-
 import os
 import csv
 import torch
@@ -20,9 +13,7 @@ from core.model_zoo.alexnet_me import MultiExitAlexNet
 from core.model_zoo.vgg16_me import MultiExitVGG16
 
 
-# ---------------------------------------------------------
-# Baseline algorithms
-# ---------------------------------------------------------
+
 
 def vehicle_only_inference(env, model):
     """Vehicle-only inference (no offloading)."""
@@ -52,15 +43,10 @@ def meoci_inference(env, agent, model):
     return total_latency
 
 
-# ---------------------------------------------------------
-# Evaluation Pipeline
-# ---------------------------------------------------------
+
 
 def evaluate_device(env, agent, model, device_label, episodes=5):
-    """
-    Evaluate average inference latency on a given device type.
-    device_label ∈ { "Nano", "Pi4B" }
-    """
+
     print(f"\n[Evaluating Device: {device_label}]")
     latencies = {
         "Vehicle-Only": [],

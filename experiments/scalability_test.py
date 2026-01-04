@@ -1,12 +1,3 @@
-"""
-experiments.scalability_test
-----------------------------------------------------------
-Evaluate system scalability and dynamic constraints under varying
-vehicle density, transmission rate, and delay constraints.
-
-Reproduces Fig.10–Fig.12 of the MEOCI paper.
-"""
-
 import os
 import csv
 import numpy as np
@@ -21,9 +12,6 @@ from core.agent.agent_adp_d3qn import ADP_D3QNAgent
 from core.model_zoo.alexnet_me import MultiExitAlexNet
 
 
-# ---------------------------------------------------------
-# Experiment 1: Vehicle Density Scaling (Fig.10)
-# ---------------------------------------------------------
 def evaluate_vehicle_density(env, agent, model, density_list, episodes=3):
     """Measure inference latency and completion rate under different vehicle counts."""
     latency_results = {}
@@ -58,9 +46,7 @@ def evaluate_vehicle_density(env, agent, model, density_list, episodes=3):
     return latency_results, completion_results
 
 
-# ---------------------------------------------------------
-# Experiment 2: Transmission Rate Scaling (Fig.11)
-# ---------------------------------------------------------
+
 def evaluate_transmission_rate(env, agent, model, rate_list, episodes=3):
     """Measure latency and completion rate under different transmission rates (Mbps)."""
     latency_results = {}
@@ -92,9 +78,7 @@ def evaluate_transmission_rate(env, agent, model, rate_list, episodes=3):
     return latency_results, completion_results
 
 
-# ---------------------------------------------------------
-# Experiment 3: Delay Constraint (Fig.12)
-# ---------------------------------------------------------
+
 def evaluate_delay_constraints(env, agent, model, delay_constraints, episodes=3):
     """Analyze how delay constraints affect accuracy and task completion."""
     accuracy_results = {}
@@ -127,9 +111,7 @@ def evaluate_delay_constraints(env, agent, model, delay_constraints, episodes=3)
     return accuracy_results, completion_results
 
 
-# ---------------------------------------------------------
-# Main Function
-# ---------------------------------------------------------
+
 def scalability_test(cfg_path: str):
     """Run scalability experiments for vehicle density, rate, and delay constraints."""
     cfg = ConfigManager(cfg_path).config
@@ -157,7 +139,6 @@ def scalability_test(cfg_path: str):
 
     os.makedirs("./results/csv", exist_ok=True)
 
-    # --- Experiment 1: Vehicle Density ---
     vehicle_counts = [5, 10, 15, 20, 25, 30]
     latency_v, completion_v = evaluate_vehicle_density(env, agent, model, vehicle_counts)
     with open("./results/csv/latency_vs_vehicle.csv", "w", newline="") as f:
@@ -166,7 +147,6 @@ def scalability_test(cfg_path: str):
         for n in vehicle_counts:
             writer.writerow([n, latency_v[n], completion_v[n]])
 
-    # --- Experiment 2: Transmission Rate ---
     rates = [5, 10, 15, 20, 25]
     latency_r, completion_r = evaluate_transmission_rate(env, agent, model, rates)
     with open("./results/csv/latency_vs_mbps.csv", "w", newline="") as f:
@@ -175,7 +155,6 @@ def scalability_test(cfg_path: str):
         for r in rates:
             writer.writerow([r, latency_r[r], completion_r[r]])
 
-    # --- Experiment 3: Delay Constraint ---
     delay_limits = [15, 20, 25, 30]
     acc_d, completion_d = evaluate_delay_constraints(env, agent, model, delay_limits)
     with open("./results/csv/delay_constraints.csv", "w", newline="") as f:
